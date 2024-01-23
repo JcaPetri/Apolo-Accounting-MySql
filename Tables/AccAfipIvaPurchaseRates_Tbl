@@ -14,16 +14,14 @@ DROP TABLE IF EXISTS `accountingdb`.`AccAfipIvaPurchaseRates_Tbl`;
 CREATE TABLE `accountingdb`.`AccAfipIvaPurchaseRates_Tbl` (
     `IDNum` int NOT NULL AUTO_INCREMENT COMMENT 'The IDNum is the autoincrement number', 
     `ID` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The ID is the uniqueidentifier auto generated V4', 
-
     `PurchaseReceiptTypeIDn` int NOT NULL COMMENT 'The PurchaseReceiptTypeIDn is the IdNum of the table 1539-AccAfipPurchaseReceiptTypes_Tbl, could be FC A, B, NC A, B, etc.',
     `SalePointIDn` int NOT NULL COMMENT 'Is a integer number up of zero. It depend of the seller.',
     `ReceiptNumber` int NOT NULL COMMENT 'Is a integer number up of zero.',
-    `SellerDocumentIDn` int NOT NULL COMMENT 'The SellerDocumentIDn is the IdNum of the table 1540-AccAfipSellerDocuments_Tbl, could be CUIT, DNI, etc.',
-    `AfipIDn` int NOT NULL COMMENT 'The AfipIDn is the IdNum of the table 1634-AccPrnAfip_Mir, is the CUIT, LC, LE, etc, number.',
+    `BuyerDocumentIDn` int NOT NULL COMMENT 'The BuyerDocumentIDn is the IdNum of the table 1541-AccAfipBuyerDocuments_Tbl, could be CUIT, DNI, etc.',
+    `AfipSubjectIDn` int NOT NULL COMMENT 'The AfipSubjectIDn is the IdNum of the table 1634-AccPrnAfipSubject_Mir, is the CUIT, LC, LE, etc, number.',
     `NetAmountTaxed` decimal(11,4) NOT NULL COMMENT 'Is a numeric number with 4 zero',
     `IvaRateIDn` int NOT NULL COMMENT 'The IvaRateIDn is the IdNum of the table 1543-AccAfipIvaRates_Tbl.',
     `TaxSettled` decimal(11,4) NOT NULL COMMENT 'The value of the Tax settled.',
-
     `StateIDn` smallint NOT NULL COMMENT 'The StatedIDn define if the record is enable or not.',
     `CreatedByIDn` int NOT NULL COMMENT 'The CreatedByIDn is the IdNum of the user who created the record.',
     `LastModifiedByIDn` int NOT NULL COMMENT 'The LastModifiedByIDn is the IdNum of the last user who modified the record.',
@@ -38,7 +36,8 @@ CREATE TABLE `accountingdb`.`AccAfipIvaPurchaseRates_Tbl` (
     UNIQUE KEY `IDNum_AIprUnique` (`IDNum`) COMMENT 'The IDNum must be unique.',
     KEY `ID_AIprIdx` (`ID`) /*!80000 INVISIBLE */ COMMENT 'The ID alway must be indexed.',
     KEY `IDNum_AIprIdx` (`IDNum`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
-    KEY `PurchaseRecPointNumber_AIprIdx` (`PurchaseReceiptTypeIDn`,`SalePointIDn`,`ReceiptNumber`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.'
+    KEY `PurchaseRecPointNumber_AIprIdx` (`PurchaseReceiptTypeIDn`,`SalePointIDn`,`ReceiptNumber`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
+    KEY `AfipSubjectIDn_AIprIdx` (`AfipSubjectIDn`) /*!80000 INVISIBLE */ COMMENT 'The AfipSubjectIDn is the cuit, lc, dni.'
 ) ENGINE=InnoDB 
     AUTO_INCREMENT=0 
     DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
@@ -91,8 +90,8 @@ CREATE TRIGGER `AccAfipIvaPurchaseRatesBeforeUpdate_Trg` BEFORE UPDATE ON `AccAf
         IF NEW.PurchaseReceiptTypeIDn <> OLD.PurchaseReceiptTypeIDn THEN SET v_TableHistory := OLD.PurchaseReceiptTypeIDn; ELSE SET v_TableHistory := '†'; END IF;
         IF NEW.SalePointIDn <> OLD.SalePointIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SalePointIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
         IF NEW.ReceiptNumber <> OLD.ReceiptNumber THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ReceiptNumber); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.SellerDocumentIDn <> OLD.SellerDocumentIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SellerDocumentIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.RAfipIDn <> OLD.AfipIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.AfipIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.BuyerDocumentIDn <> OLD.BuyerDocumentIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.BuyerDocumentIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.AfipSubjectIDn <> OLD.AfipSubjectIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.AfipSubjectIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
         IF NEW.NetAmountTaxed <> OLD.NetAmountTaxed THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.NetAmountTaxed); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
         IF NEW.IvaRateIDn <> OLD.IvaRateIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.IvaRateIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
         IF NEW.TaxSettled <> OLD.TaxSettled THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.TaxSettled); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
