@@ -15,7 +15,7 @@ CREATE TABLE `accountingdb`.`AccAfipIvaSalesRates_Tbl` (
     `IDNum` int NOT NULL AUTO_INCREMENT COMMENT 'The IDNum is the autoincrement number', 
     `ID` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The ID is the uniqueidentifier auto generated V4', 
     `SalesReceiptTypeIDn` int NOT NULL COMMENT 'The SalesReceiptTypeIDn is the IdNum of the table 1538-AccAfipSalesReceiptTypes_Tbl, could be FC A, B, NC A, B, etc.',
-    `SalePointIDn` int NOT NULL COMMENT 'The SalesPointIDn is the IdNum of the table 1543-AccAfipPointSales_Tbl, could be 0001, 0002, ... etc.',
+    `PointSaleIDn` int NOT NULL COMMENT 'The PointSaleIDn is the IdNum of the table 1543-AccAfipPointSales_Tbl, could be 0001, 0002, ... etc.',
     `ReceiptNumber` int NOT NULL COMMENT 'Is a integer number up of zero.',
     `NetAmountTaxed` decimal(11,4) NOT NULL COMMENT 'Is a numeric number with 4 zero',
     `IvaRateIDn` int NOT NULL COMMENT 'The IvaRateIDn is the IdNum of the table 1543-AccAfipIvaRates_Tbl.',
@@ -85,7 +85,7 @@ CREATE TRIGGER `AccAfipIvaSalesRatesBeforeUpdate_Trg` BEFORE UPDATE ON `AccAfipI
 		-- IDNum, this value never changes.
 		-- ID, this value never changes.
 		IF NEW.SalesReceiptTypeIDn <> OLD.SalesReceiptTypeIDn THEN SET v_TableHistory := OLD.SalesReceiptTypeIDn; ELSE SET v_TableHistory := '†'; END IF;
-		IF NEW.SalePointIDn <> OLD.SalePointIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SalePointIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+		IF NEW.PointSaleIDn <> OLD.PointSaleIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.PointSaleIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
 		IF NEW.ReceiptNumber <> OLD.ReceiptNumber THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ReceiptNumber); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
 		IF NEW.NetAmountTaxed <> OLD.NetAmountTaxed THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.NetAmountTaxed); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
 		IF NEW.IvaRateIDn <> OLD.IvaRateIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.IvaRateIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
