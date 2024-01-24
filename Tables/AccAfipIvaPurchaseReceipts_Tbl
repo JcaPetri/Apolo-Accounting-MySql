@@ -1,0 +1,155 @@
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the AccAfipIvaPurchaseReceipts_Tbl table
+/*Contains all the receipts purchase information stored in the AFIP.
+This information is chargered automatically by the software. 
+The user should never change this table.*/
+
+-- #########################################################################################################################################################################################
+-- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Delete the table AccAfipIvaPurchaseReceipts_Tbl if Exits, but first you must to altere the tables that have a referenced foreign key
+USE accountingdb;
+
+-- After deleted the referenced, you can delete the table
+DROP TABLE IF EXISTS `accountingdb`.`AccAfipIvaPurchaseReceipts_Tbl`;
+
+CREATE TABLE `accountingdb`.`AccAfipIvaPurchaseReceipts_Tbl` (
+    `IDNum` int NOT NULL AUTO_INCREMENT COMMENT 'The IDNum is the autoincrement number', 
+    `ID` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The ID is the uniqueidentifier auto generated V4',
+    `AfipIvaIDn` int NOT NULL COMMENT 'The AfipIvaIDn is the IDNum of the table who has the general information.',
+    `ReceiptDate` datetime NOT NULL COMMENT 'The Date of the Receipt is the record creation date with UTC.',
+    `PurchaseReceiptTypeIDn` int NOT NULL COMMENT 'The PurchaseReceiptTypeIDn is the IdNum of the table 1539-AccAfipPurchaseReceiptTypes_Tbl, could be FC A, B, NC A, B, etc.',
+    `SalePointIDn` int NOT NULL COMMENT 'Is a integer number up of zero. It depend of the seller.',
+    `ReceiptNumber` int NOT NULL COMMENT 'Is a integer number up of zero.',
+    `ImportClearance` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The Import Clearance from abroad.',	  
+    `SellerDocumentIDn` int NOT NULL COMMENT 'The SellerDocumentIDn is the IdNum of the table 1540-AccAfipSellerDocuments_Tbl, could be CUIT, DNI, etc.',
+    `AfipSubjectIDn` int NOT NULL COMMENT 'The AfipSubjectIDn is the IdNum of the table 1634-AccPrnAfipSubject_Mir, is the CUIT, LC, LE, etc, number.',
+    `SellerName` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The Name of the Seller.',	  
+    `TotalOperation` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `ConceptsNotMakeUpIva` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `ExemptOperations` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `PaymentPerceptionIva` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `PaymentPerceptionNationalTaxes` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `GrossIncomePerception` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `MunicipalTaxPerceptions` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `InternalTaxes` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `CurrencyIDn` int NOT NULL COMMENT 'The CurrencyIDn is the IdNum of the table 1537-AccAfipCurrencies_Tbl, could be PESO, $, YUAN.',
+    `ExchangeRate` decimal(6,4) NOT NULL COMMENT 'Is a numeric number with 4 zeros',
+    `NumberIvaRates` smallint NOT NULL COMMENT 'The NumberIvaRates is how many types of diferents IVA rates has the document.',
+    `BuyerOperationIDn` int NOT NULL COMMENT 'The BuyerOperationIDn is the IdNum of the table 1623-AccAfipBuyerOperations_Tbl, could be CUIT, DNI, etc.',
+    `ComputableTaxCredit` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `OtherTaxes` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `IssuerCuitIDn` int NOT NULL COMMENT 'The IssuerCuitIDn is the AfipSubjectIDn, the value comes from the table 1634-AccPrnAfipSubject_Mir, is the CUIT, LC, LE, etc, number of the user emisor/corredor.',
+    `IssuerName` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The Name of the user emisor/corredor.',	  
+    `CommisionIva` decimal(13,2) NOT NULL COMMENT 'Is a numeric number with 2 zeros',
+    `StateIDn` smallint NOT NULL COMMENT 'The StatedIDn define if the record is enable or not.',
+    `CreatedByIDn` int NOT NULL COMMENT 'The CreatedByIDn is the IdNum of the user who created the record.',
+    `LastModifiedByIDn` int NOT NULL COMMENT 'The LastModifiedByIDn is the IdNum of the last user who modified the record.',
+    `OwnerIDn` int NOT NULL COMMENT 'The OwnerIDn is the IdNum of the record owner.',
+    `DateCreated` datetime NOT NULL COMMENT 'The DateCreated is the record creation date with UTC.',
+    `DateTimeStamp` timestamp NOT NULL COMMENT 'The DateTimeStamp is the date of the last modification of the record with UTC.',
+    `TzNameIDn` smallint NOT NULL COMMENT 'The IDNum of the TimeZone',				
+    `TzOffset` smallint NOT NULL COMMENT 'The diferences between ZeroTimeZone and the TimeZone where the record is created or updated.',					
+    `TableHistory` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The TableHistory contain then change history of each column.',
+    PRIMARY KEY `ID_AirpPriKey` (`IDNum`) COMMENT 'The sequence AccAfipIvaPurchaseRates_Tbl generate the nextval',
+    UNIQUE KEY `ID_AirpUnique` (`ID`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
+    UNIQUE KEY `IDNum_AirpUnique` (`IDNum`) COMMENT 'The IDNum must be unique.',
+    KEY `ID_AirpIdx` (`ID`) /*!80000 INVISIBLE */ COMMENT 'The ID alway must be indexed.',
+    KEY `IDNum_AirpIdx` (`IDNum`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
+    KEY `PurchaseRecPointNumber_AirpIdx` (`PurchaseReceiptTypeIDn`,`SalePointIDn`,`ReceiptNumber`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
+    KEY `AfipSubjectIDn_AirpIdx` (`AfipSubjectIDn`) /*!80000 INVISIBLE */ COMMENT 'The AfipSubjectIDn is the cuit, lc, dni.',
+    KEY `ReceiptDate_AirpIdx` (`ReceiptDate`) /*!80000 INVISIBLE */ COMMENT 'The date',
+    KEY `AfipIvaIDn_AirpIdx` (`AfipIvaIDn`) /*!80000 INVISIBLE */ COMMENT 'The AfipIvaIDn'
+) ENGINE=InnoDB 
+    AUTO_INCREMENT=0 
+    DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
+    COMMENT='Contains all the receipts purchase information stored in the AFIP.
+This information is chargered automatically by the software. 
+The user should never change this table.';
+
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the Trigger Before Insert - AccAfipIvaPurchaseReceipts_Tbl
+USE accountingdb;
+DROP TRIGGER IF EXISTS `accountingdb`.`AccAfipIvaPurchaseReceiptsBeforeInsert_Trg`;
+DELIMITER $$
+USE `accountingdb`$$
+-- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
+CREATE TRIGGER `AccAfipIvaPurchaseReceiptsBeforeInsert_Trg` BEFORE INSERT ON `AccAfipIvaPurchaseReceipts_Tbl` FOR EACH ROW BEGIN
+    -- In the case, which the request do not give this value, MySql created it.
+    -- Set the ID uniqueidentifier, IDCode, DateCreated and DateTimeStamp
+    IF new.ID IS NULL OR new.ID = '' THEN
+        SET new.ID = uuid();				-- Set the UniqueIdentifier Value
+    END IF;
+    SET new.DateCreated = ifnull(new.DateCreated,CURRENT_TIMESTAMP);
+    SET new.DateTimeStamp = ifnull(new.DateTimeStamp,CURRENT_TIMESTAMP);
+END$$
+DELIMITER ;
+
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the Trigger Before Update - AccAfipIvaPurchaseReceipts_Tbl
+-- en caso que desde Java no pasen la informacion de estos campos,
+-- establece el valor del DateTimeStamp, TableHistory creando el historico de cada registro
+USE accountingdb;
+DROP TRIGGER IF EXISTS `accountingdb`.`AccAfipIvaPurchaseReceiptsBeforeUpdate_Trg`;
+DELIMITER $$
+USE `accountingdb`$$
+-- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
+CREATE TRIGGER `AccAfipIvaPurchaseReceiptsBeforeUpdate_Trg` BEFORE UPDATE ON `AccAfipIvaPurchaseReceipts_Tbl` FOR EACH ROW BEGIN
+    DECLARE v_TableHistory text;
+    DECLARE v_TableHistoryOld text;
+    SET new.DateTimeStamp = ifnull(new.DateTimeStamp,CURRENT_TIMESTAMP);
+    IF new.TableHistory = 'SetNull' THEN
+        SET new.TableHistory = null;
+    ELSEIF new.TableHistory = 'SetOff' THEN
+        SET new.TableHistory = old.TableHistory;
+    ELSE
+    -- When the (New) value is equal the (Old), you set an empty update, because the value is steal in the record.
+    -- When the (New) value is diferent with the (Old), you set the old value in the update. The new value is in the record.
+    SET v_TableHistoryOld := old.TableHistory;
+    SET v_TableHistory = '';
+    -- IDNum, this value never changes.
+    -- ID, this value never changes.
+    IF NEW.AfipIvaIDn <> OLD.AfipIvaIDn THEN SET v_TableHistory := OLD.AfipIvaIDn; ELSE SET v_TableHistory := '†'; END IF;
+    IF NEW.ReceiptDate <> OLD.ReceiptDate THEN SET v_TableHistory := OLD.ReceiptDate; ELSE SET v_TableHistory := '†'; END IF;
+    IF NEW.PurchaseReceiptTypeIDn <> OLD.PurchaseReceiptTypeIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.PurchaseReceiptTypeIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.SalePointIDn <> OLD.SalePointIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SalePointIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;IF NEW.ReceiptNumber <> OLD.ReceiptNumber THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ReceiptNumber); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.ReceiptNumber <> OLD.ReceiptNumber THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ReceiptNumber); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.ImportClearance <> OLD.ImportClearance THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ImportClearance); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.SellerDocumentIDn <> OLD.SellerDocumentIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SellerDocumentIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.AfipSubjectIDn <> OLD.AfipSubjectIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.AfipSubjectIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.SellerName <> OLD.SellerName THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SellerName); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.TotalOperation <> OLD.TotalOperation THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.TotalOperation); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.ConceptsNotMakeUpIva <> OLD.ConceptsNotMakeUpIva THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ConceptsNotMakeUpIva); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.ExemptOperations <> OLD.ExemptOperations THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ExemptOperations); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.PaymentPerceptionIva <> OLD.PaymentPerceptionIva THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.PaymentPerceptionIva); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.PaymentPerceptionNationalTaxes <> OLD.PaymentPerceptionNationalTaxes THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.PaymentPerceptionNationalTaxes); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.GrossIncomePerception <> OLD.GrossIncomePerception THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.GrossIncomePerception); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.MunicipalTaxPerceptions <> OLD.MunicipalTaxPerceptions THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.MunicipalTaxPerceptions); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.InternalTaxes <> OLD.InternalTaxes THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.InternalTaxes); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.CurrencyIDn <> OLD.CurrencyIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.CurrencyIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.ExchangeRate <> OLD.ExchangeRate THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ExchangeRate); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.NumberIvaRates <> OLD.NumberIvaRates THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.NumberIvaRates); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.BuyerOperationIDn <> OLD.BuyerOperationIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.BuyerOperationIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.ComputableTaxCredit <> OLD.ComputableTaxCredit THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ComputableTaxCredit); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.OtherTaxes <> OLD.OtherTaxes THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.OtherTaxes); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.IssuerCuitIDn <> OLD.IssuerCuitIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.IssuerCuitIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.IssuerName <> OLD.IssuerName THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.IssuerName); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.CommisionIva <> OLD.CommisionIva THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.CommisionIva); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.StateIDn <> OLD.StateIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.StateIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.CreatedByIDn <> OLD.CreatedByIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.CreatedByIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.LastModifiedByIDn <> OLD.LastModifiedByIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.LastModifiedByIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.OwnerIDn <> OLD.OwnerIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.OwnerIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF v_TableHistoryOld IS NULL THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',NEW.DateCreated); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.DateTimeStamp <> OLD.DateTimeStamp THEN SET v_TableHistory := concat(v_TableHistory,'†',OLD.DateTimeStamp); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.TzNameIDn <> OLD.TzNameIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.TzNameIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.TzOffset <> OLD.TzOffset THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.TzOffset); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF v_TableHistoryOld IS NULL THEN
+        SET NEW.TableHistory := v_TableHistory;
+    ELSE
+        SET NEW.TableHistory := concat(v_TableHistory,'‡',v_TableHistory);
+    END IF;
+  END IF;
+END$$
+DELIMITER ;
+
+-- Lista los datos de la tabla
+SELECT * FROM `accountingdb`.`AccAfipIvaPurchaseReceipts_Tbl`;
