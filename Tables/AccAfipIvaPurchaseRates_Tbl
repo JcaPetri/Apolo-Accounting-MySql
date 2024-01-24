@@ -15,7 +15,7 @@ CREATE TABLE `accountingdb`.`AccAfipIvaPurchaseRates_Tbl` (
     `IDNum` int NOT NULL AUTO_INCREMENT COMMENT 'The IDNum is the autoincrement number', 
     `ID` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The ID is the uniqueidentifier auto generated V4', 
     `PurchaseReceiptTypeIDn` int NOT NULL COMMENT 'The PurchaseReceiptTypeIDn is the IdNum of the table 1539-AccAfipPurchaseReceiptTypes_Tbl, could be FC A, B, NC A, B, etc.',
-    `SalePointIDn` int NOT NULL COMMENT 'Is a integer number up of zero. It depend of the seller.',
+    `PointSaleIDn` int NOT NULL COMMENT 'Is a integer number up of zero. It depend of the seller.',
     `ReceiptNumber` int NOT NULL COMMENT 'Is a integer number up of zero.',
     `BuyerDocumentIDn` int NOT NULL COMMENT 'The BuyerDocumentIDn is the IdNum of the table 1541-AccAfipBuyerDocuments_Tbl, could be CUIT, DNI, etc.',
     `AfipSubjectIDn` int NOT NULL COMMENT 'The AfipSubjectIDn is the IdNum of the table 1634-AccPrnAfipSubject_Mir, is the CUIT, LC, LE, etc, number.',
@@ -36,7 +36,7 @@ CREATE TABLE `accountingdb`.`AccAfipIvaPurchaseRates_Tbl` (
     UNIQUE KEY `IDNum_AIprUnique` (`IDNum`) COMMENT 'The IDNum must be unique.',
     KEY `ID_AIprIdx` (`ID`) /*!80000 INVISIBLE */ COMMENT 'The ID alway must be indexed.',
     KEY `IDNum_AIprIdx` (`IDNum`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
-    KEY `PurchaseRecPointNumber_AIprIdx` (`PurchaseReceiptTypeIDn`,`SalePointIDn`,`ReceiptNumber`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
+    KEY `PurchaseRecPointNumber_AIprIdx` (`PurchaseReceiptTypeIDn`,`PointSaleIDn`,`ReceiptNumber`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
     KEY `AfipSubjectIDn_AIprIdx` (`AfipSubjectIDn`) /*!80000 INVISIBLE */ COMMENT 'The AfipSubjectIDn is the cuit, lc, dni.'
 ) ENGINE=InnoDB 
     AUTO_INCREMENT=0 
@@ -88,7 +88,7 @@ CREATE TRIGGER `AccAfipIvaPurchaseRatesBeforeUpdate_Trg` BEFORE UPDATE ON `AccAf
         -- IDNum, this value never changes.
         -- ID, this value never changes.
         IF NEW.PurchaseReceiptTypeIDn <> OLD.PurchaseReceiptTypeIDn THEN SET v_TableHistory := OLD.PurchaseReceiptTypeIDn; ELSE SET v_TableHistory := '†'; END IF;
-        IF NEW.SalePointIDn <> OLD.SalePointIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SalePointIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.PointSaleIDn <> OLD.PointSaleIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.PointSaleIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
         IF NEW.ReceiptNumber <> OLD.ReceiptNumber THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ReceiptNumber); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
         IF NEW.BuyerDocumentIDn <> OLD.BuyerDocumentIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.BuyerDocumentIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
         IF NEW.AfipSubjectIDn <> OLD.AfipSubjectIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.AfipSubjectIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
