@@ -114,7 +114,7 @@ CREATE TRIGGER `AccAfipIvaPurchaseReceiptsBeforeUpdate_Trg` BEFORE UPDATE ON `Ac
     IF NEW.AfipIvaIDn <> OLD.AfipIvaIDn THEN SET v_TableHistory := OLD.AfipIvaIDn; ELSE SET v_TableHistory := '†'; END IF;
     IF NEW.ReceiptDate <> OLD.ReceiptDate THEN SET v_TableHistory := OLD.ReceiptDate; ELSE SET v_TableHistory := '†'; END IF;
     IF NEW.PurchaseReceiptTypeIDn <> OLD.PurchaseReceiptTypeIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.PurchaseReceiptTypeIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.SalePointIDn <> OLD.SalePointIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SalePointIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;IF NEW.ReceiptNumber <> OLD.ReceiptNumber THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ReceiptNumber); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+    IF NEW.SalePointIDn <> OLD.SalePointIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SalePointIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
     IF NEW.ReceiptNumber <> OLD.ReceiptNumber THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ReceiptNumber); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
     IF NEW.ImportClearance <> OLD.ImportClearance THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ImportClearance); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
     IF NEW.SellerDocumentIDn <> OLD.SellerDocumentIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SellerDocumentIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
