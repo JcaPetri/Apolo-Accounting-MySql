@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS `accountingdb`.`AccAfipIvaPurchaseReceipts_Tbl`;
 CREATE TABLE `accountingdb`.`AccAfipIvaPurchaseReceipts_Tbl` (
     `IDNum` int NOT NULL AUTO_INCREMENT COMMENT 'The IDNum is the autoincrement number', 
     `ID` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The ID is the uniqueidentifier auto generated V4',
-    `AfipIvaIDn` int NOT NULL COMMENT 'The AfipIvaIDn is the IDNum of the table who has the general information.',
+    `AfipPeriodIDn` int NOT NULL COMMENT 'The AfipPeriodIDn is the IDNum of the table 1637-AccAfipPeriods_Tbl who has the general information.',
     `ReceiptDate` datetime NOT NULL COMMENT 'The Date of the Receipt is the record creation date with UTC.',
     `PurchaseReceiptTypeIDn` int NOT NULL COMMENT 'The PurchaseReceiptTypeIDn is the IdNum of the table 1539-AccAfipPurchaseReceiptTypes_Tbl, could be FC A, B, NC A, B, etc.',
     `SalePointIDn` int NOT NULL COMMENT 'Is a integer number up of zero. It depend of the seller.',
@@ -111,7 +111,7 @@ CREATE TRIGGER `AccAfipIvaPurchaseReceiptsBeforeUpdate_Trg` BEFORE UPDATE ON `Ac
     SET v_TableHistory = '';
     -- IDNum, this value never changes.
     -- ID, this value never changes.
-    IF NEW.AfipIvaIDn <> OLD.AfipIvaIDn THEN SET v_TableHistory := OLD.AfipIvaIDn; ELSE SET v_TableHistory := '†'; END IF;
+    IF NEW.AfipPeriodIDn <> OLD.AfipPeriodIDn THEN SET v_TableHistory := OLD.AfipPeriodIDn; ELSE SET v_TableHistory := '†'; END IF;
     IF NEW.ReceiptDate <> OLD.ReceiptDate THEN SET v_TableHistory := OLD.ReceiptDate; ELSE SET v_TableHistory := '†'; END IF;
     IF NEW.PurchaseReceiptTypeIDn <> OLD.PurchaseReceiptTypeIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.PurchaseReceiptTypeIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
     IF NEW.SalePointIDn <> OLD.SalePointIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.SalePointIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
