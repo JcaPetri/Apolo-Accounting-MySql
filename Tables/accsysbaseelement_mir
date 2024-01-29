@@ -1,77 +1,89 @@
 -- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
--- Create the AccSysBaseElements_Mir table
-/*Contains the Mirror of the SysBaseElements_Tbl form ApoloSystems.
-The user never changed this table, it has been changed throw Kafka from the ApoloSystem.
-This table contain the elements of all System Microservice tables.
-To determine what a code means, you should consult this table.
-In order for the same IDName word to have different meanings depending on its use, it is defined for a Scope, BusinessUnit and Language.
-To respect all the rules the unique value must be the combination of: Name/Scope/BusinessUnit/Language.
-Modification Rules:
-	You can change the Name if there is a spelling error. Example you have an spelling error in a invoce and must be invoice.
-	Warning: If I change the code that represents the word Invoice and it is an afip receipt. And I put food, everywhere the code is, food will start to appear.
-	If you want to change the code and it is in many places, the system must generate another code for the new value
-	To change this value, it must be done by the administrator. 
-	It is best to never change it.
+-- Create the accsysbaseelement_mir table
+/*Contains a mirror of the Microservice System elements, wich are needed by Accounting Microservice.
+The user never changed this table, it has been changed throw Kafka from the System.
 Kafka/RabbitMQ:
-  The BusinessUnitIDn + TableIDn combination can be the topic.*/
+    In this table we have only the row needed by the Accounting Microservice.
+    To define wich value is updated to each microservice, you need to add the baseelement_idn to the accbaseelementkafka_tbl and assing to the specific topic.
+    So when this value have some changes automatically is changed in all theirs kafka queues. 
+Concept: One row can be the union off many records, one for each column. To do that is necessary to use father_idn column.
+    Each record is like a cell in a excel grid.
+    To define properties to a field/column, you must specify it, in the accsysbaseelementproperty_mir. Ex: CSS format, Validation Rules, etc.
+    The group_idn define the section, region, company, etc., that the scope belongs to. This group is created in the systemdb database.
+The key for each record:
+    baseelement_id --> is the uniqueidentifier auto generated.
+    baseelement_idnum --> is the autoincrement number auto generated.
+        Clarification: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table accsysbaseelement_mir or accdataelement_mir).
+                         Most fields in tables have an idnum as a value. To determine what a code means, you should consult this table.
+                         If you select another language_idn, the system change all theirs values.
+The unique Key is the union of:
+    To respect all the rules the unique value must be the combination of: FieldValue/Father/Scope/Group/Language.
+        fieldvalue -> is the readable code by the user.
+        father_idn -> the father_idn define each row of the table.
+        scope_idn -> the scope_idn define the table that contain all the row.
+        group_idn -> the group_idn is the section, company, businessunit owner of the tables.
+        language_idn -> the fieldvalue mus be unique for the language. This dictionary has a default language defined.
+*/
+
 -- #########################################################################################################################################################################################
 -- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Delete the table AccSysBaseElements_Mir if Exits, but first you must to altere the tables that have a referenced foreign key
+-- Delete the table accsysbaseelement_mir if Exits, but first you must to altere the tables that have a referenced foreign key
 USE accountingdb;
 -- First you must to delete the Foreing Key Constraint;
--- The referenced AccSysBaseElements_Mir Tables:
-ALTER TABLE `accountingdb`.`SysBaseElementLanguages_Tbl` DROP FOREIGN KEY `BaseElementLanguageIDn_Rel`;
-ALTER TABLE `accountingdb`.`SysBaseElementComments_Tbl` DROP FOREIGN KEY `CommentIDn_Rel`;
+-- The referenced accsysbaseelement_mir Tables:
 
 -- After deleted the referenced, you can delete the table
-DROP TABLE IF EXISTS `accountingdb`.`AccSysBaseElements_Mir`;
+DROP TABLE IF EXISTS `accountingdb`.`accsysbaseelement_mir`;
 
-CREATE TABLE `accountingdb`.`AccSysBaseElements_Mir` (
-	  `IDNum` int NOT NULL AUTO_INCREMENT COMMENT 'The IDNum is the autoincrement number', 
-	  `ID` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The ID is the uniqueidentifier auto generated V4', 
-	  `IDName` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The IDName is the user-readable code for the selected language.',
-	  `IDNameStructureIDn` int NOT NULL COMMENT 'The IDNameStructureIDn is the IDNum of the IDName structure, if the IDName is multivalued, here it refers to the structure.',
-	  `ScopeIDn` int NOT NULL COMMENT 'The ScopeIDn is the IdNum of the Scope, the Name must be unique for the scope of application, usually a Table',
-	  `BusinessUnitIDn` int NOT NULL COMMENT 'The BusinessUnitIDn is the IdNum of the BusinessUnit to which the IDName is assigned',
-	  `LanguageIDn` int NOT NULL COMMENT 'The LanguageIDn is the IdNum of the language in which the Name is defined',
-	  `IDCode` int NOT NULL COMMENT 'The IDCode is the unique code of the record for a scope and company.',
-	  `DefinitionIDn` int NOT NULL COMMENT 'The DefinitionIDn is the IdNum of the element definition type.',
-	  `InformationTypeIDn` int NOT NULL COMMENT 'Then InformationTypeIDn is the IdNum of the type of information that the record represents.',
-	  `IDIsUsed` tinyint NOT NULL COMMENT 'The IDIsUsed determines if the registry is used or not.',
-	  `StateIDn` smallint NOT NULL COMMENT 'The StatedIDn define if the record is enable or not.',
-	  `CreatedByIDn` int NOT NULL COMMENT 'The CreatedByIDn is the IdNum of the user who created the record.',
-	  `LastModifiedByIDn` int NOT NULL COMMENT 'The LastModifiedByIDn is the IdNum of the last user who modified the record.',
-	  `OwnerIDn` int NOT NULL COMMENT 'The OwnerIDn is the IdNum of the record owner.',
-	  `DateCreated` datetime NOT NULL COMMENT 'The DateCreated is the record creation date with UTC.',
-	  `DateTimeStamp` timestamp NOT NULL COMMENT 'The DateTimeStamp is the date of the last modification of the record with UTC.',
- 	  `TzNameIDn` smallint NOT NULL COMMENT 'The IDNum of the TimeZone',				
-	  `TzOffset` smallint NOT NULL COMMENT 'The diferences between ZeroTimeZone and the TimeZone where the record is created or updated.',					
-	  `TableHistory` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The TableHistory contain then change history of each column.',
-	  PRIMARY KEY `ID_ASbePriKey` (`IDNum`) COMMENT 'The sequence AccSysBaseElements_Mir_seq generate the nextval',
-	  UNIQUE KEY `ID_ASbeUnique` (`ID`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
-	  UNIQUE KEY `IDNum_ASbeUnique` (`IDNum`) COMMENT 'The IDNum must be unique.',
-	  UNIQUE KEY `IDNameScopeBusUnitLang_ASbeUnique` (`IDName`,`ScopeIDn`,`BusinessUnitIDn`,`LanguageIDn`) COMMENT 'A name can be unique for a ScopeId, for a BusinessUnitId, and LanguageId.',
-	  UNIQUE KEY `IDCodeIDScopeIDBusUnit_ASbeUnique` (`BusinessUnitIDn`,`ScopeIDn`, `IDCode`) COMMENT 'A IDCode must be unique for a ScopeId and for a BusinessUnitId.',
-	  KEY `ID_ASbeIdx` (`ID`) /*!80000 INVISIBLE */ COMMENT 'The ID alway must be indexed.',
-	  KEY `IDNum_ASbeIdx` (`IDNum`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
-	  KEY `IDCode_ASbeIdx` (`IDCode`) /*!80000 INVISIBLE */ COMMENT 'The IDCode must be indexed, because it works like IDNum.',
-	  KEY `IDBusUnitScop_ASbeIdx` (`IDIsUsed` ASC, `BusinessUnitIDn` ASC, `ScopeIDn`ASC) COMMENT 'To optimize the search of Business Tables.'
+CREATE TABLE `accountingdb`.`accsysbaseelement_mir` (
+    `baseelement_idnum` int NOT NULL AUTO_INCREMENT COMMENT 'The baseelement_idnum is the autoincrement number', 
+    `baseelement_id` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The baseelement_id is the uniqueidentifier auto generated V4', 
+    `tablefield_idn` integer NOT NULL COMMENT 'The tablefield_idn is the baseelement_idn of the field/column assined to row.',
+    `fieldvaluetype_idn` integer NOT NULL COMMENT 'The fieldvaluetype_idn is the baseelement_idn of the type the fieldvalue (ex, text, number, other idnum, etc).',
+    `fieldvalue` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The fieldvalue is the user-readable code for the selected language.',
+    `fieldvaluestructure_idn` int NOT NULL COMMENT 'The fieldvaluestructure_idn is the baseelement_idnum of the fieldvalue structure, if the fieldvalue is multivalued, here it refers to the structure.',
+    `language_idn` int NOT NULL COMMENT 'The language_idn is the IdNum of the language in which the Name is defined',
+    `father_idn` int NOT NULL COMMENT 'The father_idn is the dataelement_idnum of the row, this idnum join all fields/columns making a classical table.',
+    `scope_idn` int NOT NULL COMMENT 'The scope_idn is the IdNum of the Scope, the Name must be unique for the scope of application, usually a Table',
+    `group_idn` int NOT NULL COMMENT 'The group_idn is the IdNum of the BusinessUnit to which the fieldvalue is assigned',
+    `id_order` int NOT NULL COMMENT 'The id_order is the unique code of the record for a scope and company.',
+    `definition_idn` int NOT NULL COMMENT 'The definition_idn is the IdNum of the element definition type.',
+    `state_idn` smallint NOT NULL COMMENT 'The stated_idn define if the record is enable or not, or the custom state difined.',
+    `createdby_idn` int NOT NULL COMMENT 'The createdby_idn is the user_idnum of the user who created the record. Linked to the userdb database through userauthorization_mir.',
+    `lastmodifiedby_idn` int NOT NULL COMMENT 'The lastmodifiedby_idn is the user_idnum of the last one that modified the record. Linked to the userdb database through userauthorization_mir.',
+    `ownedby_idn` int NOT NULL COMMENT 'The ownedby_idn is the user_idnum of the record owner. Linked to the userdb database through userauthorization_mir.',
+    `date_created` datetime(6) NOT NULL COMMENT 'The date_created is the record creation datetime UTC.',
+    `date_timestamp` datetime(6) NOT NULL COMMENT 'The date_timestamp is the datetime UTC of the last modification.',
+    `tzname_idn` smallint NOT NULL COMMENT 'The accsysbaseelement_idnum of the TimeZone.',
+    `tzoffset` smallint NOT NULL COMMENT 'The number of the diference between ZeroTimeZone and the TimeZone where the record is created or updated.',
+    `table_history` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The table_history contain then change history of each column. The value is set only if it has changed from the previous value.',
+    PRIMARY KEY `id_sbeKey` (`baseelement_idnum`) COMMENT 'The sequence is an autoincremental value, generated in the systemdb.',
+    UNIQUE KEY `id_sbeuni` (`baseelement_id`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
+    UNIQUE KEY `baseelement_idnum_sbeuni` (`baseelement_idnum`) COMMENT 'The baseelement_idnum must be unique.',
+    UNIQUE KEY `fieldvaluescopegrouplang_sbeuni` (`fieldvalue` ASC, `father_idn` ASC,`scope_idn` ASC,`group_idn` ASC,`language_idn` ASC) COMMENT 'A fieldvalue must be unique for a father_idn, scope_idn, for a group_idn, and language_idn.',
+    KEY `id_sbeidx` (`baseelement_id`) /*!80000 INVISIBLE */ COMMENT 'The baseelement_id alway must be indexed.',
+    KEY `baseelement_idnum_sbeidx` (`baseelement_idnum`) /*!80000 INVISIBLE */ COMMENT 'The baseelement_idnum must always be indexed.',
+    KEY `stategroupscope_sbeidx` (`state_idn`ASC, `group_idn` ASC, `scope_idn`ASC) COMMENT 'To optimize the search of Microservices Tables.'
 ) ENGINE=InnoDB 
-	DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
-	COMMENT='Contains the Mirror of the SysBaseElements_Tbl form ApoloSystems.
-The user never changed this table, it has been changed throw Kafka from the ApoloSystem.
-This table contain the elements of all System Microservice tables.
-To determine what a code means, you should consult this table.
-In order for the same IDName word to have different meanings depending on its use, it is defined for a Scope, BusinessUnit and Language.
-To respect all the rules the unique value must be the combination of: Name/Scope/BusinessUnit/Language.
-Modification Rules:
-	You can change the Name if there is a spelling error. Example you have an spelling error in a invoce and must be invoice.
-	Warning: If I change the code that represents the word Invoice and it is an afip receipt. And I put food, everywhere the code is, food will start to appear.
-	If you want to change the code and it is in many places, the system must generate another code for the new value
-	To change this value, it must be done by the administrator. 
-	It is best to never change it.
+    DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
+    COMMENT='Contains a mirror of the Microservice System elements, wich are needed by Accounting Microservice.
+The user never changed this table, it has been changed throw Kafka from the System.
 Kafka/RabbitMQ:
-  The BusinessUnitIDn + TableIDn combination can be the topic.';
+    In this table we have only the row needed by the Accounting Microservice.
+    To define wich value is updated to each microservice, you need to add the baseelement_idn to the accbaseelementkafka_tbl and assing to the specific topic.
+    So when this value have some changes automatically is changed in all theirs kafka queues. 
+Concept: One row can be the union off many records, one for each column. To do that is necessary to use father_idn column.
+    Each record is like a cell in a excel grid.
+    To define properties to a field/column, you must specify it, in the accsysbaseelementproperty_mir. Ex: CSS format, Validation Rules, etc.
+    The group_idn define the section, region, company, etc., that the scope belongs to. This group is created in the systemdb database.
+The key for each record:
+    baseelement_id --> is the uniqueidentifier auto generated.
+    baseelement_idnum --> is the autoincrement number auto generated.
+        Clarification: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table accsysbaseelement_mir or accdataelement_mir).
+                         Most fields in tables have an idnum as a value. To determine what a code means, you should consult this table.
+                         If you select another language_idn, the system change all theirs values.
+The unique Key is the union of:
+    To respect all the rules the unique value must be the combination of: FieldValue/Father/Scope/Group/Language.';
 
 -- Lista los datos de la tabla
-SELECT * FROM `accountingdb`.`AccSysBaseElements_Mir`;
+SELECT * FROM `accountingdb`.`accsysbaseelement_mir`;
