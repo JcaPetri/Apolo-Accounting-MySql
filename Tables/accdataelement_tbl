@@ -12,10 +12,11 @@ The key for each record:
         Clarification: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table sysbaseelement_tbl or accdataelement_tbl).
 The unique Key is the union of:
     For the same idname word to have different meanings depending on its use, it is defined for a Scope, Group and Language.
-        idname -> is the readable code by the user.
-        scope_idn -> the Name must be unique for the application Scope, usually a Table or Entity.
-        group_idn -> the Name must be unique for the Group.
-        language_idn -> the Name must be unique for Language. This dictionary has a default language defined.
+        fieldvalue -> is the readable code by the user.
+        father_idn -> the father_idn define each row of the table.
+        scope_idn -> the scope_idn define the table that contain all the row.
+        group_idn -> the group_idn is the section, company, businessunit owner of the tables.
+        language_idn -> the fieldvalue mus be unique for the language. This dictionary has a default language defined.
 Modification Rules Only when the definition_idn is software:
     You can change the idname if there is a spelling error. Example you have a spelling error in an invoce and must be invoice.
     Warning: If I change the code that represents the word invoice and it is an afip receipt. And I put food, everywhere the code is, food will start to appear.
@@ -97,10 +98,11 @@ The key for each record:
         Clarification: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table sysbaseelement_tbl or accdataelement_tbl).
 The unique Key is the union of:
     For the same idname word to have different meanings depending on its use, it is defined for a Scope, Group and Language.
-        idname -> is the readable code by the user.
-        scope_idn -> the Name must be unique for the application Scope, usually a Table or Entity.
-        group_idn -> the Name must be unique for the Group.
-        language_idn -> the Name must be unique for Language. This dictionary has a default language defined.
+        fieldvalue -> is the readable code by the user.
+        father_idn -> the father_idn define each row of the table.
+        scope_idn -> the scope_idn define the table that contain all the row.
+        group_idn -> the group_idn is the section, company, businessunit owner of the tables.
+        language_idn -> the fieldvalue mus be unique for the language. This dictionary has a default language defined.
 Modification Rules Only when the definition_idn is software:
     You can change the idname if there is a spelling error. Example you have a spelling error in an invoce and must be invoice.
     Warning: If I change the code that represents the word invoice and it is an afip receipt. And I put food, everywhere the code is, food will start to appear.
