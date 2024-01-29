@@ -1,0 +1,180 @@
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the accdataelementproperty_tbl table
+/*
+Contains the properties of the cell for each Fields/Columns of the Data Elements records.
+Concept: 
+    Tbl_1- each row of the accdataelement_tbl function like cell in a grid. 
+    Tbl_2- each row of the accdataelementproperty_tbl is a new property of the cell record created in Tbl_1.
+             This properties could be the CSS, or a Validation subject, etc.
+             If one row of Tbl_1 do not have some row in Tbl_2, recieve the default properties value. 
+Important: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table sysbaseelement_tbl or accdataelement_tbl).
+The key for each row/record:
+    dataelementproperty_idnum --> is the autoincrement number auto generated, all the relation between tables are maded by this column.
+    dataelementproperty_id --> is the uniqueidentifier auto generated.
+The unique Key is the union of:
+    dataelement_idn -> the row from the accdataelement_tbl, that recieve the properties.
+    propertycell_idn -> the table of the properties are in the accsysbaseelement_mir, this table is linked with the System database through Kafka.
+        unique = One propertycell_idn must be unique for each dataelement_idn. (Ex: one cell can has one Css property)
+Common Field/Columns for all tables
+  The objective of these are to store critical information for the system and the record history.
+    stated_idn --> The stated_idn define if the record is enable or not, or the custom state difined. Linked to the system database through sysbaseelement_mir.
+    createdby_idn --> The createdby_idn is the user_idnum of the user who created the record. Linked to the userdb database through userauthorization_tbl.
+    lastmodifiedby_idn --> The lastmodifiedby_idn is the user_idnum of the last one that modified the record. Linked to the userdb database through userauthorization_tbl.
+    ownedby_idn --> The ownedby_idn is the user_idnum of the record owner. Linked to the userdb database through userauthorization_tbl.
+    date_created --> The date_created is the record creation datetime UTC.
+    date_timestamp --> The date_timestamp is the datetime UTC of the last modification.
+    tzname_idn --> The sysbaseelement_idnum of the TimeZone. Linked to the system database through sysbaseelement_mir.
+    tzoffset --> The number of the diference between ZeroTimeZone and the TimeZone where the record is created or updated.
+    table_history --> The table_history contain then change history of each column. The value is set only if it has changed from the previous value.
+*/
+
+-- #########################################################################################################################################################################################
+-- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Delete the table accdataelementproperty_tbl if Exits, but first you must to altere the tables that have a referenced foreign key
+USE accountingdb;
+-- First you must to delete the Foreing Key Constraint;
+-- The referenced accdataelementproperty_tbl Tables:
+-- ALTER TABLE `accountingdb`.`SysMicroservices_tbl`  DROP FOREIGN KEY `MicroserviceIDn_Rel`;
+
+-- After deleted the referenced, you can delete the table
+DROP TABLE IF EXISTS `accountingdb`.`accdataelementproperty_tbl`;
+
+CREATE TABLE `accountingdb`.`accdataelementproperty_tbl` (
+    `dataelementproperty_idnum` int NOT NULL AUTO_INCREMENT COMMENT 'The dataelementproperty_idnum is the autoincrement number', 
+    `dataelementproperty_id` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The dataelementproperty_id is the uniqueidentifier auto generated V4', 
+    `dataelement_idn` integer NOT NULL COMMENT 'The dataelement_idn is the row of the table accdataelement_tbl who receive the new property.',
+    `propertycell_idn` integer NOT NULL COMMENT 'The propertycell_idn is the baseelement_idn of the property assined to row. Linked to the system database through sysbaseelement_mir.',
+    `propertyvaluetype_idn` integer NOT NULL COMMENT 'The propertyvaluetype_idn is the baseelement_idn of the type the propertyvalue (ex, text, number, other idnum, etc). Linked to the system database through sysbaseelement_mir.',
+    `propertyvalue` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The propertyvalue is a numeric/text/etc value of the property, this value is not standar and can´t be multilanguage. If the value is an dataelementproperty_idnum Type, the meaning is in the accdataelement_tbl. In this case the propertyvaluetype_idn must be xxx propertyvalue_idn.',
+    `propertystructure_idn` int NOT NULL COMMENT 'The propertystructure_idn is the dataelement_idnum of the propertyvalue structure, if it is multivalued, here it refers to the structure. Linked to the system database through sysbaseelement_mir.',
+    `language_idn` int NOT NULL COMMENT 'The language_idn is the dataelement_idnum of the language in which the property value is defined. Linked to the system database through sysbaseelement_mir.',
+    `id_order` int NOT NULL COMMENT 'The id_order is the unique code, of the record, for each dataelement_idn. This field is used to order the properties of one record. If the user do not define it, the system use an autoincremental number.',
+    `definition_idn` int NOT NULL COMMENT 'The definition_idn is the dataelement_idnum of the element definition type, could be software, data, bpmn, etc. Linked to the system database through sysbaseelement_mir.',
+    `state_idn` smallint NOT NULL COMMENT 'The stated_idn define if the record is enable or not, or the custom state difined. Linked to the system database through sysbaseelement_mir.',
+    `createdby_idn` int NOT NULL COMMENT 'The createdby_idn is the user_idnum of the user who created the record. Linked to the userdb database through userauthorization_tbl.',
+    `lastmodifiedby_idn` int NOT NULL COMMENT 'The lastmodifiedby_idn is the user_idnum of the last one that modified the record. Linked to the userdb database through userauthorization_tbl.',
+    `ownedby_idn` int NOT NULL COMMENT 'The ownedby_idn is the user_idnum of the record owner. Linked to the userdb database through userauthorization_tbl.',
+    `date_created` datetime(6) NOT NULL COMMENT 'The date_created is the record creation datetime UTC.',
+    `date_timestamp` datetime(6) NOT NULL COMMENT 'The date_timestamp is the datetime UTC of the last modification.',
+    `tzname_idn` smallint NOT NULL COMMENT 'The sysbaseelement_idnum of the TimeZone. Linked to the system database through sysbaseelement_mir.',		
+    `tzoffset` smallint NOT NULL COMMENT 'The number of the diference between ZeroTimeZone and the TimeZone where the record is created or updated.',
+    `table_history` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The table_history contain then change history of each column. The value is set only if it has changed from the previous value.',
+    PRIMARY KEY `id_adepkey` (`dataelementproperty_idnum`) COMMENT 'The sequence is an autoincremental value.',
+    UNIQUE KEY `id_adepuni` (`dataelementproperty_id`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
+    UNIQUE KEY `dataelementproperty_adepuni` (`dataelementproperty_idnum`) COMMENT 'The dataelementproperty_idnum must be unique.',
+    UNIQUE KEY `dataelementpropcell_adepuni` (`dataelement_idn`, `propertycell_idn`) COMMENT 'The propertycell_idn must be unique for a dataelement_idn.',
+    KEY `id_adepidx` (`dataelementproperty_id`) /*!80000 INVISIBLE */ COMMENT 'The dataelementproperty_id alway must be indexed.',
+    KEY `dataelementproperty_idnum_adepidx` (`dataelementproperty_idnum`) /*!80000 INVISIBLE */ COMMENT 'The dataelementproperty_idnum must always be indexed.',
+    KEY `dataelemtablefield_adepidx` (`dataelement_idn` ASC, `propertycell_idn` ASC) VISIBLE COMMENT 'To optimize the search of one element for a Tables.',
+    CONSTRAINT `dataelementidn_adeprel` FOREIGN KEY (`dataelement_idn`) REFERENCES `accountingdb`.`accdataelement_tbl` (`dataelement_idnum`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `tablefieldidn_adeprel` FOREIGN KEY (`propertycell_idn`) REFERENCES `accountingdb`.`accsysbaseelement_mir` (`baseelement_idnum`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB 
+    AUTO_INCREMENT=0 
+    DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
+    COMMENT='Contains the properties of the cell for each Fields/Columns of the Data Elements records.
+Concept: 
+    Tbl_1- each row of the accdataelement_tbl function like cell in a grid. 
+    Tbl_2- each row of the accdataelementproperty_tbl is a new property of the cell record created in Tbl_1.
+             This properties could be the CSS, or a Validation subject, etc.
+             If one row of Tbl_1 do not have some row in Tbl_2, recieve the default properties value. 
+Important: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table sysbaseelement_tbl or accdataelement_tbl).
+The key for each row/record:
+    dataelementproperty_idnum --> is the autoincrement number auto generated, all the relation between tables are maded by this column.
+    dataelementproperty_id --> is the uniqueidentifier auto generated.
+The unique Key is the union of:
+    dataelement_idn -> the row from the accdataelement_tbl, that recieve the properties.
+    propertycell_idn -> the table of the properties are in the accsysbaseelement_mir, this table is linked with the System database through Kafka.
+        unique = One propertycell_idn must be unique for each dataelement_idn. (Ex: one cell can has one Css property)
+Common Field/Columns for all tables
+  The objective of these are to store critical information for the system and the record history.
+    stated_idn --> The stated_idn define if the record is enable or not, or the custom state difined. Linked to the system database through sysbaseelement_mir.
+    createdby_idn --> The createdby_idn is the user_idnum of the user who created the record. Linked to the userdb database through userauthorization_tbl.
+    lastmodifiedby_idn --> The lastmodifiedby_idn is the user_idnum of the last one that modified the record. Linked to the userdb database through userauthorization_tbl.
+    ownedby_idn --> The ownedby_idn is the user_idnum of the record owner. Linked to the userdb database through userauthorization_tbl.
+    date_created --> The date_created is the record creation datetime UTC.
+    date_timestamp --> The date_timestamp is the datetime UTC of the last modification.
+    tzname_idn --> The sysbaseelement_idnum of the TimeZone. Linked to the system database through sysbaseelement_mir.
+    tzoffset --> The number of the diference between ZeroTimeZone and the TimeZone where the record is created or updated.
+    table_history --> The table_history contain then change history of each column. The value is set only if it has changed from the previous value.';
+
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the Trigger Before Insert - accdataelementproperty_tbl
+USE accountingdb;
+DROP TRIGGER IF EXISTS `accountingdb`.`accdataelementpropertyBeforeInsert_Trg`;
+DELIMITER $$
+USE `accountingdb`$$
+-- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
+CREATE TRIGGER `accdataelementpropertyBeforeInsert_Trg` BEFORE INSERT ON `accdataelementproperty_tbl` FOR EACH ROW BEGIN
+    -- In the case, which the request do not give this value, MySql created it.
+    -- Set the ID uniqueidentifier, IDCode, DateCreated and DateTimeStamp
+    IF new.dataelementproperty_id IS NULL OR new.dataelementproperty_id = '' THEN
+        SET new.dataelementproperty_id = uuid();    -- Set the UniqueIdentifier Value
+    END IF;
+    IF new.id_order IS NULL OR new.id_order = 0 OR new.id_order = '' THEN
+        SET new.id_order = (SELECT ifnull(MAX(id_order),0) + 1 FROM `accountingdb`.`accdataelementproperty_tbl` WHERE dataelement_idn = new.dataelement_idn);
+        -- Assign the numeric auto-incremental id_order for this dataelement_idn.
+    END IF;
+    SET new.date_created = ifnull(new.date_created,CURRENT_TIMESTAMP);
+    SET new.date_timestamp = ifnull(new.date_timestamp,CURRENT_TIMESTAMP);
+END$$
+DELIMITER ;
+
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the Trigger Before Update - accdataelementproperty_tbl
+-- en caso que desde Java no pasen la informacion de estos campos,
+-- establece el valor del date_timestamp, table_history creando el historico de cada registro
+USE accountingdb;
+DROP TRIGGER IF EXISTS `accountingdb`.`accdataelementpropertyBeforeUpdate_Trg`;
+DELIMITER $$
+USE `accountingdb`$$
+    -- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
+CREATE TRIGGER `accdataelementpropertyBeforeUpdate_Trg` BEFORE UPDATE ON `accdataelementproperty_tbl` FOR EACH ROW BEGIN
+    DECLARE v_tablehistory text;
+    DECLARE v_tablehistoryold text;
+    SET new.date_timestamp = ifnull(new.date_timestamp,CURRENT_TIMESTAMP);
+    IF new.table_history = 'SetNull' THEN
+        SET new.table_history = null;
+    ELSEIF new.table_history = 'SetOff' THEN
+        SET new.table_history = old.table_history;
+    ELSE
+        -- When the (New) value is equal the (Old), you set an empty update, because the value is steal in the record.
+        -- When the (New) value is diferent with the (Old), you set the old value in the update. The new value is in the record.
+        SET v_tablehistoryold := old.table_history;
+        SET v_tablehistory = '';
+        -- dataelementproperty_idnum, this value never changes.
+        -- dataelementproperty_id, this value never changes.
+        IF NEW.dataelement_idn <> OLD.dataelement_idn THEN SET v_tablehistory := OLD.dataelement_idn; ELSE SET v_tablehistory := '†'; END IF;
+        IF NEW.propertycell_idn <> OLD.propertycell_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.propertycell_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.propertyvaluetype_idn <> OLD.propertyvaluetype_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.propertyvaluetype_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.propertyvalue <> OLD.propertyvalue THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.propertyvalue); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.propertystructure_idn <> OLD.propertystructure_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.propertystructure_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.language_idn <> OLD.language_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.language_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.id_order <> OLD.id_order THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.id_order); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.definition_idn <> OLD.definition_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.definition_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.state_idn <> OLD.state_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.state_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.createdby_idn <> OLD.createdby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.createdby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.lastmodifiedby_idn <> OLD.lastmodifiedby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.lastmodifiedby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.ownedby_idn <> OLD.ownedby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.ownedby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF v_tablehistoryold IS NULL THEN
+            SET v_tablehistory := CONCAT(v_tablehistory,'†',NEW.date_created); 
+            -- This only add the date_created if is the first time that are going to set up the history value.
+        ELSE 
+            SET v_tablehistory := CONCAT(v_tablehistory,'†'); 
+            -- Do not add a date_created, the record only have the first one.
+        END IF;
+        IF NEW.date_timestamp <> OLD.date_timestamp THEN SET v_tablehistory := concat(v_tablehistory,'†',OLD.date_timestamp); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.tzname_idn <> OLD.tzname_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.tzname_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.tzoffset <> OLD.tzoffset THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.tzoffset); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF v_tablehistoryold IS NULL THEN
+            SET NEW.table_history := v_tablehistory;
+            -- This line ensures add the first history value.
+        ELSE
+            SET NEW.table_history := concat(v_tablehistory,'‡',v_tablehistory);
+            -- This line concat the new and old history value.
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+-- Lista los datos de la tabla
+SELECT * FROM `accountingdb`.`accdataelementproperty_tbl`;
