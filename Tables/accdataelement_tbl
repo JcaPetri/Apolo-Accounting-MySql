@@ -78,7 +78,7 @@ CREATE TABLE `accountingdb`.`accdataelement_tbl` (
     PRIMARY KEY `id_adekey` (`dataelement_idnum`) COMMENT 'The sequence is an autoincremental value.',
     UNIQUE KEY `id_adeuni` (`dataelement_id`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
     UNIQUE KEY `dataelement_idnum_adeuni` (`dataelement_idnum`) COMMENT 'The dataelements_idnum must be unique.',
-    UNIQUE KEY `idnamescopegrouplang_adeuni` (`fieldvalue`,`scope_idn`,`group_idn`,`language_idn`) COMMENT 'A fieldvalue must be unique for a scope_idn, for a group_idn, and language_idn.',
+    UNIQUE KEY `idfieldvalfatherscopegrouplang_adeuni` (`fieldvalue` ASC, `father_idn` ASC, `scope_idn` ASC, `group_idn` ASC, `language_idn` ASC) COMMENT 'A fieldvalue must be unique for a father_idn, scope_idn, for a group_idn, and language_idn.',
     KEY `id_adeidx` (`dataelement_id`) /*!80000 INVISIBLE */ COMMENT 'The dataelement_id alway must be indexed.',
     KEY `dataelement_idnum_adeidx` (`dataelement_idnum`) /*!80000 INVISIBLE */ COMMENT 'The dataelement_idnum must always be indexed.',
     KEY `stategroupscope_adeidx` (`state_idn`ASC, `group_idn` ASC, `scope_idn`ASC) COMMENT 'To optimize the search of Microservices Tables.'
