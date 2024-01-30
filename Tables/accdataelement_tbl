@@ -60,7 +60,6 @@ CREATE TABLE `accountingdb`.`accdataelement_tbl` (
     `tablefield_idn` integer NOT NULL COMMENT 'The tablefield_idn is the baseelement_idn of the field/column assined to row. Linked to the system database through sysbaseelement_mir.',
     `fieldvaluetype_idn` integer NOT NULL COMMENT 'The fieldvaluetype_idn is the baseelement_idn of the type the fieldvalue (ex, text, number, other idnum, etc). Linked to the system database through sysbaseelement_mir.',
     `fieldvalue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The fieldvalue is a numeric/text/etc value of the field/column, this value is not standar and can´t be multilanguage. If the value is an dataelementotherfield_idnum Type, the meaning is in the accdataelement_tbl. In this case the fieldvaluetype_idn must be 1509 FieldValueIDn.',
-    `fieldstructure_idn` int NOT NULL COMMENT 'The fieldstructure_idn is the dataelement_idnum of the fieldvalue structure, if it is multivalued, here it refers to the structure. Linked to the system database through sysbaseelement_mir.',
     `language_idn` int NOT NULL COMMENT 'The language_idn is the dataelement_idnum of the language in which the field value is defined. Linked to the system database through sysbaseelement_mir.',
     `father_idn` int NOT NULL COMMENT 'The father_idn is the dataelement_idnum of the row, this idnum join all fields/columns making a classical table.',
     `scope_idn` int NOT NULL COMMENT 'The scope_idn is the dataelement_idnum of the scope, the idname must be unique for the scope_id of application, usually a Table',
@@ -162,7 +161,6 @@ CREATE TRIGGER `accdataelementBeforeUpdate_Trg` BEFORE UPDATE ON `accdataelement
         IF NEW.tablefield_idn <> OLD.tablefield_idn THEN SET v_tablehistory := OLD.tablefield_idn; ELSE SET v_tablehistory := '†'; END IF;
         IF NEW.fieldvaluetype_idn <> OLD.fieldvaluetype_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.fieldvaluetype_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
         IF NEW.fieldvalue <> OLD.fieldvalue THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.fieldvalue); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
-        IF NEW.fieldstructure_idn <> OLD.fieldstructure_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.fieldstructure_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
         IF NEW.language_idn <> OLD.language_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.language_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
         IF NEW.father_idn <> OLD.father_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.father_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
         IF NEW.scope_idn <> OLD.scope_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.scope_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
