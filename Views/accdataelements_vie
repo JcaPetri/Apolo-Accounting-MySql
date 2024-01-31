@@ -1,40 +1,47 @@
-USE `accountingdb`;
-CREATE  OR REPLACE VIEW `AccDataElements_Vie` AS
-SELECT `ade`.`IDNum`,
-    `ade`.`ID`,
-    `ade`.`IDName`,
-    `ade`.`IDNameStructureIDn`,
-	`bem01`.`IDName` 'FieldStructure',
-    `ade`.`ScopeIDn`,
-	`bem02`.`IDName` 'Scope',    
-    `ade`.`GroupIDn`,
-	`de01`.`IDName` 'Group',    
-    `ade`.`LanguageIDn`,
-	`bem04`.`IDName` 'Language',        
-    `ade`.`IDCode`,
-    `ade`.`DefinitionIDn`,
-	`bem05`.`IDName` 'Definition',        
-    `ade`.`InformationTypeIDn`,
-	`bem06`.`IDName` 'InformationType',        
-    `ade`.`IDIsUsed`,
-    `ade`.`StateIDn`,
-	`bem07`.`IDName` 'State',        
-    `ade`.`CreatedByIDn`,
-    `ade`.`LastModifiedByIDn`,
-    `ade`.`OwnerIDn`,
-    `ade`.`DateCreated`,
-    `ade`.`DateTimeStamp`,
-    `ade`.`TzNameIDn`,
-	`bem08`.`IDName` 'TzName',        
-    `ade`.`TzOffset`,
-    `ade`.`TableHistory`
-FROM `accountingdb`.`AccDataElements_Tbl` `ade`
-	LEFT JOIN `accountingdb`.`AccSysBaseElements_Mir` `bem01` ON `ade`.`IDNameStructureIDn` = `bem01`.`IDNum`
-	LEFT JOIN `accountingdb`.`AccSysBaseElements_Mir` `bem02` ON `ade`.`ScopeIDn` = `bem02`.`IDNum`    
-	LEFT JOIN `accountingdb`.`AccDataElements_Tbl` `de01` ON `ade`.`GroupIDn` = `de01`.`IDNum`        
-	LEFT JOIN `accountingdb`.`AccSysBaseElements_Mir` `bem04` ON `ade`.`LanguageIDn` = `bem04`.`IDNum`        
-	LEFT JOIN `accountingdb`.`AccSysBaseElements_Mir` `bem05` ON `ade`.`DefinitionIDn` = `bem05`.`IDNum`        
-	LEFT JOIN `accountingdb`.`AccSysBaseElements_Mir` `bem06` ON `ade`.`InformationTypeIDn` = `bem06`.`IDNum`        
-	LEFT JOIN `accountingdb`.`AccSysBaseElements_Mir` `bem07` ON `ade`.`StateIDn` = `bem07`.`IDNum`        
-	LEFT JOIN `accountingdb`.`AccSysBaseElements_Mir` `bem08` ON `ade`.`TzNameIDn` = `bem08`.`IDNum`        
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = root@localhost 
+    SQL SECURITY DEFINER
+VIEW accountingdb.accdataelements_vie AS
+    SELECT 
+        ade.dataelement_idnum AS dataelement_idnum,
+        ade.dataelement_id AS dataelement_id,
+        ade.tablefield_idn AS tablefield_idn,
+        bem01.fieldvalue AS tablefield_name,
+        ade.fieldvaluetype_idn AS fieldvaluetype_idn,
+        bem02.fieldvalue AS fieldvaluetype_name,
+        ade.fieldvalue AS fieldvalue,
+        IFNULL(dem01.fieldvalue, ade.fieldvalue) AS fieldvalue_name,
+        ade.language_idn AS language_idn,
+        bem03.fieldvalue AS language_name,
+        ade.father_idn AS father_idn,
+        ade.scope_idn AS scope_idn,
+        bem04.fieldvalue AS scope_name,
+        ade.group_idn AS group_idn,
+        bem05.fieldvalue AS group_name,
+        ade.id_order AS id_order,
+        ade.definition_idn AS definition_idn,
+        bem06.fieldvalue AS definition_name,
+        ade.state_idn AS state_idn,
+        bem07.fieldvalue AS state_name,
+        ade.createdby_idn AS createdby_idn,
+        ade.lastmodifiedby_idn AS lastmodifiedby_idn,
+        ade.ownedby_idn AS ownedby_idn,
+        ade.date_created AS date_created,
+        ade.date_timestamp AS date_timestamp,
+        ade.tzname_idn AS tzname_idn,
+        bem08.fieldvalue AS tzname_name,
+        ade.tzoffset AS tzoffset,
+        ade.table_history AS table_history
+    FROM
+        accountingdb.accdataelement_tbl ade
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem01 ON ade.tablefield_idn = bem01.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem02 ON ade.fieldvaluetype_idn = bem02.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem03 ON ade.language_idn = bem03.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem04 ON ade.scope_idn = bem04.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem05 ON ade.group_idn = bem05.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem06 ON ade.definition_idn = bem06.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem07 ON ade.state_idn = bem07.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem08 ON ade.tzname_idn = bem08.baseelement_idnum
+        LEFT JOIN accountingdb.accdataelement_tbl dem01 ON ade.fieldvalue = dem01.dataelement_idnum
 ;
