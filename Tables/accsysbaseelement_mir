@@ -1,32 +1,6 @@
 -- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 -- Create the accsysbaseelement_mir table
-/*Contains a mirror of the Microservice System elements, wich are needed by Accounting Microservice.
-The user never changed this table, it has been changed throw Kafka from the System.
-Kafka/RabbitMQ:
-    In this table we have only the row needed by the Accounting Microservice.
-    To define wich value is updated to each microservice, you need to add the baseelement_idn to the accbaseelementkafka_tbl and assing to the specific topic.
-    So when this value have some changes automatically is changed in all theirs kafka queues. 
-Concept: One row can be the union off many records, one for each column. To do that is necessary to use father_idn column.
-    Each record is like a cell in a excel grid.
-    To define properties to a field/column, you must specify it, in the accsysbaseelementproperty_mir. Ex: CSS format, Validation Rules, etc.
-    The group_idn define the section, region, company, etc., that the scope belongs to. This group is created in the systemdb database.
-The key for each record:
-    baseelement_id --> is the uniqueidentifier auto generated.
-    baseelement_idnum --> is the autoincrement number auto generated.
-        Clarification: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table accsysbaseelement_mir or accdataelement_mir).
-                         Most fields in tables have an idnum as a value. To determine what a code means, you should consult this table.
-                         If you select another language_idn, the system change all theirs values.
-The unique Key is the union of:
-    To respect all the rules the unique value must be the combination of: FieldValue/Father/Scope/Group/Language.
-        fieldvalue -> is the readable code by the user.
-        father_idn -> the father_idn define each row of the table.
-        scope_idn -> the scope_idn define the table that contain all the row.
-        group_idn -> the group_idn is the section, company, businessunit owner of the tables.
-        language_idn -> the fieldvalue mus be unique for the language. This dictionary has a default language defined.
-*/
-
--- #########################################################################################################################################################################################
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Delete the table accsysbaseelement_mir if Exits, but first you must to altere the tables that have a referenced foreign key
 USE accountingdb;
 -- First you must to delete the Foreing Key Constraint;
@@ -41,7 +15,6 @@ CREATE TABLE `accountingdb`.`accsysbaseelement_mir` (
     `tablefield_idn` integer NOT NULL COMMENT 'The tablefield_idn is the baseelement_idn of the field/column assined to row.',
     `fieldvaluetype_idn` integer NOT NULL COMMENT 'The fieldvaluetype_idn is the baseelement_idn of the type the fieldvalue (ex, text, number, other idnum, etc).',
     `fieldvalue` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The fieldvalue is the user-readable code for the selected language.',
-    `fieldvaluestructure_idn` int NOT NULL COMMENT 'The fieldvaluestructure_idn is the baseelement_idnum of the fieldvalue structure, if the fieldvalue is multivalued, here it refers to the structure.',
     `language_idn` int NOT NULL COMMENT 'The language_idn is the IdNum of the language in which the Name is defined',
     `father_idn` int NOT NULL COMMENT 'The father_idn is the dataelement_idnum of the row, this idnum join all fields/columns making a classical table.',
     `scope_idn` int NOT NULL COMMENT 'The scope_idn is the IdNum of the Scope, the Name must be unique for the scope of application, usually a Table',
@@ -81,9 +54,17 @@ The key for each record:
     baseelement_idnum --> is the autoincrement number auto generated.
         Clarification: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table accsysbaseelement_mir or accdataelement_mir).
                          Most fields in tables have an idnum as a value. To determine what a code means, you should consult this table.
-                         If you select another language_idn, the system change all theirs values.
+                         If you select another language_idn, the system change all theirs values.';
+
+/*
 The unique Key is the union of:
-    To respect all the rules the unique value must be the combination of: FieldValue/Father/Scope/Group/Language.';
+    To respect all the rules the unique value must be the combination of: FieldValue/Father/Scope/Group/Language.
+        fieldvalue -> is the readable code by the user.
+        father_idn -> the father_idn define each row of the table.
+        scope_idn -> the scope_idn define the table that contain all the row.
+        group_idn -> the group_idn is the section, company, businessunit owner of the tables.
+        language_idn -> the fieldvalue mus be unique for the language. This dictionary has a default language defined.
+*/
 
 -- Lista los datos de la tabla
 SELECT * FROM `accountingdb`.`accsysbaseelement_mir`;
