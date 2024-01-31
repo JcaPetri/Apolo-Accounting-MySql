@@ -1,85 +1,72 @@
 -- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
--- Create the AccSysEntityStructures_Mir table
-/*Contains the Mirror of the SysEntityStructures_Tbl form ApoloSystems.
-Contains the system structure. In this table you build the tables and java entities structures, with thiers column and fields.
-You must define all the properties of the entities.
-The key for each record:
-	ID	--> is the uniqueidentifier auto generated.
-	IDNum	--> is the autoincrement number auto generated.
-The unique Key is the union of:
-	FieldIDn 		--> The FieldIDn is the IDNum of the field/column of the entity. Link with the SysBaseElements_Tbl.
-	EntityIDn 		--> The EntityIDn is the IDNum of the entity. Link with the SysBaseElements_Tbl.
-	MicroserviceIDn --> the IdNum of the Microservice that the Field and Entity belong. When is equal System, all microservices hava access to them.
-	When an entity is selected from the Entity_Tbl, the Microservice is set, this parameter define the possible fields to be selected.
-Common Field/Columns for all tables
-	The objective of these are to store critical information for the system and the record history.
-		StatedIDn 			--> The StatedIDn is the IDNum that define if the record is enable or not.
-		CreatedByIDn		--> The CreatedByIDn is the IDNum of the user who created the record.
-		LastModifiedByIDn	--> The LastModifiedByIDn is the IDNum of the last user who modified the record.
-		OwnerIDn			--> The OwnerIDn is the IDNum of the record owner.
-		DateCreated			--> The DateCreated is the record creation datetime UTC.
-		DateTimeStamp		--> The DateTimeStamp is the datetime UTC of the last modification.
-		TableHistory		-->	The TableHistory contain then change history of each column.
-*/
-
--- #########################################################################################################################################################################################
+-- Create the accsysentitystructure_mir table
 -- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- First Delete the table AccSysEntityStructures_Mir if Exits, but first you must to altere the tables that have a referenced foreign key
+-- Delete the table accsysentitystructure_mir if Exits, but first you must to altere the tables that have a referenced foreign key
 USE accountingdb;
 -- First you must to delete the Foreing Key Constraint;
--- The referenced baseelement_tbl Tables:
-ALTER TABLE `accountingdb`.`SysEntityStructureFieldProperties_Tbl`  DROP FOREIGN KEY `EntityStructureIDn_Rel`;
-ALTER TABLE `accountingdb`.`SysEntityStructureFieldDefaultValues_Tbl`  DROP FOREIGN KEY `EntityStructureIDn_Rel`;
+-- The referenced accsysentitystructure_mir Tables:
+-- ALTER TABLE `accountingdb`.`SysMicroservices_mir`  DROP FOREIGN KEY `microservice_idn_Rel`;
 
--- #########################################################################################################################################################################################
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Second create the AccSysEntityStructures_Mir table
--- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Table: public.AccSysEntityStructures_Mir
-DROP TABLE IF EXISTS `accountingdb`.`AccSysEntityStructures_Mir`;
+-- After deleted the referenced, you can delete the table
+DROP TABLE IF EXISTS `accountingdb`.`accsysentitystructure_mir`;
 
-CREATE TABLE `accountingdb`.`AccSysEntityStructures_Mir` (
-	  `IDNum` int NOT NULL AUTO_INCREMENT COMMENT 'The IDNum is the autoincrement number', 
-	  `ID` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The ID is the uniqueidentifier auto generated V4', 
-	   `FieldIDn` int NOT NULL COMMENT 'The FieldIDn is the IDNum of the field/column of the entity. Link with the SysEntityFields_Tbl.',
-	  `EntityIDn` integer NOT NULL COMMENT 'The EntityIDn is the IDNum of the entity. Link with the SysEntities_Tbl. The entity is set to a microservice and business unit.',
-    `MicroserviceIDn` int NOT NULL COMMENT 'The MicroServiceIDn is the IdNum of the Microservice to which the IDName is assigned.',
-	  `DataTypeIDn` integer NOT NULL COMMENT 'The DataTypeIDn is the IDNum of the type of data that you can enter in the field. Link with the SysBaseElements_Tbl.',
-    `FieldOrder` integer NOT NULL COMMENT 'The FieldOrder is an ascendent number to order the fields/columns. If the user don`t define, the system insert an autonumeric increment number.',
-    `AdmitDefaultValue` boolean NOT NULL COMMENT 'The AdmitDefaultValue, if the value is 1 the field admit the default value, otherwise not. This is to facilitate data insertion.',
-    `FieldNotNull` boolean NOT NULL COMMENT 'The FieldNotNull, if the value is 1 the field can`t be null, otherwise the null value is allowed.',
-	  `StateIDn` smallint NOT NULL COMMENT 'The StatedIDn define if the record is enable or not.',
-	  `CreatedByIDn` int NOT NULL COMMENT 'The CreatedByIDn is the IdNum of the user who created the record.',
-	  `LastModifiedByIDn` int NOT NULL COMMENT 'The LastModifiedByIDn is the IdNum of the last user who modified the record.',
-	  `OwnerIDn` int NOT NULL COMMENT 'The OwnerIDn is the IdNum of the record owner.',
-	  `DateCreated` datetime NOT NULL COMMENT 'The DateCreated is the record creation date with UTC.',
-	  `DateTimeStamp` timestamp NOT NULL COMMENT 'The DateTimeStamp is the date of the last modification of the record with UTC.',
- 	  `TzNameIDn` smallint NOT NULL COMMENT 'The IDNum of the TimeZone',				
-	  `TzOffset` smallint NOT NULL COMMENT 'The diferences between ZeroTimeZone and the TimeZone where the record is created or updated.',					
-	  `TableHistory` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The TableHistory contain then change history of each column.',
-	  PRIMARY KEY `IDNum_ASesPrikey` (`IDNum`) COMMENT 'The sequence AccSysEntityStructures_Mir generate the nextval',
-	  UNIQUE KEY `ID_ASesUnique` (`ID`) /*!80000 INVISIBLE */ COMMENT 'The uniqueidentifier.',
-	  UNIQUE KEY `IDNum_ASesUnique` (`IDNum`) COMMENT 'The IDNum must be unique.',
-	  UNIQUE KEY `IDnFieldEntMicro_ASefUnique` (`FieldIDn`,`EntityIDn`,`MicroserviceIDn`) COMMENT 'The Field must be unique for one Entity, Microservice.',
-	  KEY `ID_ASefIdx` (`ID`) /*!80000 INVISIBLE */ COMMENT 'The ID must always be indexed.',
-    KEY `IDNum_ASefIdx` (`IDNum`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
-    KEY `FieldEntMicrBusUnit_ASefIdx` (`FieldIDn` ASC, `EntityIDn` ASC, `MicroserviceIDn` ASC) VISIBLE COMMENT 'To optimize the search of one fields for an Entity.',
-	  CONSTRAINT `FieldIDn_ASefRel` FOREIGN KEY (`FieldIDn`) REFERENCES `accountingdb`.`AccSysBaseElements_Mir` (`IDNum`) ON DELETE CASCADE ON UPDATE CASCADE,
-	  CONSTRAINT `EntityIDn_ASefRel` FOREIGN KEY (`EntityIDn`) REFERENCES `accountingdb`.`AccSysBaseElements_Mir` (`IDNum`) ON DELETE CASCADE ON UPDATE CASCADE,
-	  CONSTRAINT `MicroserviceIDn_ASefRel` FOREIGN KEY (`MicroserviceIDn`) REFERENCES `accountingdb`.`AccSysBaseElements_Mir` (`IDNum`) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE `accountingdb`.`accsysentitystructure_mir` (
+    `entitystructure_idnum` int NOT NULL AUTO_INCREMENT COMMENT 'The entitystructure_idnum is the autoincrement number', 
+    `entitystructure_id` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The entitystructure_id is the uniqueidentifier auto generated V4', 
+    `field_idn` integer NOT NULL COMMENT 'The field_idn is the idnum of the field/column of the entity. Link with the sysbaseelement_mir.',
+    `entity_idn` integer NOT NULL COMMENT 'The entity_idn is the idnum of the entity. Link with the sysbaseelement_mir.',
+    `microservice_idn` integer NOT NULL COMMENT 'The microservice_idn is the idnum of the Microservice that the Entity and Field belong. When is equal System, all microservices hava access to them.',
+    `datatype_idn` integer NOT NULL COMMENT 'The datatype_idn is the idnum of the type of data that you can enter in the field. Link with the sysbaseelement_mir.',
+    `fieldnotnull` boolean NOT NULL COMMENT 'The fieldnotnull, if the value is 1 the field can`t be null, otherwise the null value is allowed.',
+    `admitdefaultvalue` boolean NOT NULL COMMENT 'The admitdefaultvalue, if the value is 1 the field admit the default value, otherwise not. This is to facilitate data insertion.',
+    `fieldorder` integer NOT NULL COMMENT 'The fieldorder is an ascendent number to order the fields/columns. If the user don`t define, the system insert an autonumeric increment number.',
+    `targettable_idn` integer NOT NULL COMMENT 'The targettable_idn is the idnum of the physical or real table. Link with the sysbaseelement_mir.',
+    `state_idn` smallint NOT NULL COMMENT 'The stated_idn define if the record is enable or not, or the custom state difined. Linked to the system database through sysbaseelement_mir.',
+    `createdby_idn` int NOT NULL COMMENT 'The createdby_idn is the user_idnum of the user who created the record. Linked to the userdb database through userauthorization_mir.',
+    `lastmodifiedby_idn` int NOT NULL COMMENT 'The lastmodifiedby_idn is the user_idnum of the last one that modified the record. Linked to the userdb database through userauthorization_mir.',
+    `ownedby_idn` int NOT NULL COMMENT 'The ownedby_idn is the user_idnum of the record owner. Linked to the userdb database through userauthorization_mir.',
+    `date_created` datetime(6) NOT NULL COMMENT 'The date_created is the record creation datetime UTC.',
+    `date_timestamp` datetime(6) NOT NULL COMMENT 'The date_timestamp is the datetime UTC of the last modification.',
+    `tzname_idn` smallint NOT NULL COMMENT 'The sysfield_idnum of the TimeZone. Linked to the system database through sysbaseelement_mir.',		
+    `tzoffset` smallint NOT NULL COMMENT 'The number of the diference between ZeroTimeZone and the TimeZone where the record is created or updated.',
+    `table_history` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The table_history contain then change history of each column. The value is set only if it has changed from the previous value.',
+    PRIMARY KEY `entitystructureidnum_aesmkey` (`entitystructure_idnum`) COMMENT 'The sequence is an autoincremental value.',
+    UNIQUE KEY `entitystructureidnum_aesmuni` (`entitystructure_idnum`) COMMENT 'The entitystructure_idnum must be unique.',
+    KEY `entitystructureidnum_aesmidx` (`entitystructure_idnum`) /*!80000 INVISIBLE */ COMMENT 'The entitystructure_idnum must always be indexed.',
+    UNIQUE KEY `entitystructureid_aesmuni` (`entitystructure_id`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
+    KEY `entitystructureid_aesmidx` (`entitystructure_id`) /*!80000 INVISIBLE */ COMMENT 'The entitystructure_id alway must be indexed.',
+    UNIQUE KEY `microentityfield_aesmuni` (`field_idn`, `entity_idn`, `microservice_idn`) COMMENT 'The field must be unique for the entity and microservice.',
+    KEY `microentityfield_aesmidx` (`field_idn` ASC, `entity_idn` ASC, `microservice_idn` ASC) VISIBLE COMMENT 'To optimize the search of one element for a Tables.'
 ) ENGINE=InnoDB 
-	DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
-    COMMENT='Contains the Mirror of the SysEntityStructures_Tbl form ApoloSystems.
-Contains the system structure. In this table you build the tables and java entities structures, with thiers column and fields.
-You must define all the properties of the entities.
+    DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
+    COMMENT='Contains the Mirror structure of the system, but only that this microservice need.
+Concept: In this table you build the tables and java entity structures, with their columns and fields.
+             You must define all the properties of the entities.
+             The target table is physical or real table where the datas are stored. 
+             When you receive a CRUD, you need to know in wich real table are stored the data, to make the request.
 The key for each record:
-	ID	--> is the uniqueidentifier auto generated.
-	IDNum	--> is the autoincrement number auto generated.
+    entitystructure_idnum --> is the autoincrement number auto generated.
+    entitystructure_id --> is the uniqueidentifier auto generated.
 The unique Key is the union of:
-	FieldIDn 		--> The FieldIDn is the IDNum of the field/column of the entity. Link with the SysBaseElements_Tbl.
-	EntityIDn 		--> The EntityIDn is the IDNum of the entity. Link with the SysBaseElements_Tbl.
-	MicroserviceIDn --> the IdNum of the Microservice that the Field and Entity belong. When is equal System, all microservices hava access to them.
-	When an entity is selected from the Entity_Tbl, the Microservice is set, this parameter define the possible fields to be selected.';
+    field_idn --> The field_idn is the idnum of the field/column of the entity. Link with the sysbaseelement_mir.
+    entity_idn --> The entity_idn is the idnum of the entity. Link with the sysbaseelement_mir.
+    microservice_idn --> The microservice_idn is the idnum of the Microservice that the Entity and Field belong. When is equal System, all microservices hava access to them.
+    When an entity is selected from the entity_mir, the Microservice is set, this parameter define the possible fields to be selected.
+    Important: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table sysbaseelement_mir).';
+
+/*
+Common Field/Columns for all tables
+  The objective of these are to store critical information for the system and the record history.
+    stated_idn --> The stated_idn define if the record is enable or not, or the custom state difined. Linked to the system database through sysbaseelement_mir.
+    createdby_idn --> The createdby_idn is the user_idnum of the user who created the record. Linked to the userdb database through userauthorization_mir.
+    lastmodifiedby_idn --> The lastmodifiedby_idn is the user_idnum of the last one that modified the record. Linked to the userdb database through userauthorization_mir.
+    ownedby_idn --> The ownedby_idn is the user_idnum of the record owner. Linked to the userdb database through userauthorization_mir.
+    date_created --> The date_created is the record creation datetime UTC.
+    date_timestamp --> The date_timestamp is the datetime UTC of the last modification.
+    tzname_idn --> The sysfield_idnum of the TimeZone. Linked to the system database through sysbaseelement_mir.
+    tzoffset --> The number of the diference between ZeroTimeZone and the TimeZone where the record is created or updated.
+    table_history --> The table_history contain then change history of each column. The value is set only if it has changed from the previous value.
+*/
 
 -- Lista los datos de la tabla
-SELECT * FROM `accountingdb`.`AccSysEntityStructures_Mir`;
+SELECT * FROM `accountingdb`.`accsysentitystructure_mir`;
