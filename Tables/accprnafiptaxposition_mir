@@ -1,105 +1,110 @@
 -- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
--- Create the AccPrnTaxPosition_Mir table
-/*Contains the Mirror of the PrnTaxPosition_Tbl form ApoloPersons.
-The user never changed this table, it has been changed throw Kafka from the ApoloPersons.
-This table contain the information about the Persons tax position.*/
--- #########################################################################################################################################################################################
+-- Create the accprntaxposition_mir table
 -- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Delete the table AccPrnTaxPosition_Mir if Exits, but first you must to altere the tables that have a referenced foreign key
+-- Delete the table accprntaxposition_mir if Exits, but first you must to altere the tables that have a referenced foreign key
 USE accountingdb;
 
 -- After deleted the referenced, you can delete the table
-DROP TABLE IF EXISTS `accountingdb`.`AccPrnTaxPosition_Mir`;
+DROP TABLE IF EXISTS `accountingdb`.`accprntaxposition_mir`;
 
-CREATE TABLE `accountingdb`.`AccPrnTaxPosition_Mir` (
-	  `IDNum` int NOT NULL AUTO_INCREMENT COMMENT 'The IDNum is the autoincrement number', 
-	  `ID` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The ID is the uniqueidentifier auto generated V4', 
-	  `AfipDocumentTypeIDn` int NOT NULL COMMENT 'The AfipDocumentTypeIDn is the IdNum of the type of AFIP documents, It could be DNI, Passport, LC, etc',
-	  `AfipDocumentValue` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'This value can be a number / text, CUIT, Passport afanumber, etc.',
-	  `AfipDocumentName` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The is the Name of the Person, can be physic or legal.',
-	  `StateIDn` smallint NOT NULL COMMENT 'The StatedIDn define if the record is enable or not.',
-	  `CreatedByIDn` int NOT NULL COMMENT 'The CreatedByIDn is the IdNum of the user who created the record.',
-	  `LastModifiedByIDn` int NOT NULL COMMENT 'The LastModifiedByIDn is the IdNum of the last user who modified the record.',
-	  `OwnerIDn` int NOT NULL COMMENT 'The OwnerIDn is the IdNum of the record owner.',
-	  `DateCreated` datetime NOT NULL COMMENT 'The DateCreated is the record creation date with UTC.',
-	  `DateTimeStamp` timestamp NOT NULL COMMENT 'The DateTimeStamp is the date of the last modification of the record with UTC.',
- 	  `TzNameIDn` smallint NOT NULL COMMENT 'The IDNum of the TimeZone',				
-	  `TzOffset` smallint NOT NULL COMMENT 'The diferences between ZeroTimeZone and the TimeZone where the record is created or updated.',					
-	  `TableHistory` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The TableHistory contain then change history of each column.',
-	  PRIMARY KEY `ID_APtpPriKey` (`IDNum`) COMMENT 'The sequence AccPrnTaxPosition_Mir generate the nextval',
-	  UNIQUE KEY `ID_APtpUnique` (`ID`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
-	  UNIQUE KEY `IDNum_APtpUnique` (`IDNum`) COMMENT 'The IDNum must be unique.',
-	  UNIQUE KEY `DocTypeValue_APtpUnique` (`AfipDocumentTypeIDn`,`AfipDocumentValue`) COMMENT 'A Document value must be unique for a Document Type.',
-	  KEY `ID_APtpIdx` (`ID`) /*!80000 INVISIBLE */ COMMENT 'The ID alway must be indexed.',
-	  KEY `AfipDocumentValue_APtpIdx` (`AfipDocumentValue`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.'
+CREATE TABLE `accountingdb`.`accprntaxposition_mir` (
+    `accprntaxposition_idnum` int NOT NULL AUTO_INCREMENT COMMENT 'The accprntaxposition_idnum is the autoincrement number', 
+    `accprntaxposition_id` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The accprntaxposition_id is the uniqueidentifier auto generated V4', 
+    `afipdocumenttype_idn` int NOT NULL COMMENT 'The afipdocumenttype_idn is the IdNum of the type of AFIP documents, It could be DNI, Passport, LC, etc',
+    `afipdocumentvalue` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'This value can be a number / text, CUIT, Passport afanumber, etc.',
+    `afipdocumentname` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The is the Name of the Person, can be physic or legal.',
+    `state_idn` smallint NOT NULL COMMENT 'The stated_idn define if the record is enable or not, or the custom state difined.',
+    `createdby_idn` int NOT NULL COMMENT 'The createdby_idn is the user_idnum of the user who created the record. Linked to the userdb database through userauthorization_mir.',
+    `lastmodifiedby_idn` int NOT NULL COMMENT 'The lastmodifiedby_idn is the user_idnum of the last one that modified the record. Linked to the userdb database through userauthorization_mir.',
+    `ownedby_idn` int NOT NULL COMMENT 'The ownedby_idn is the user_idnum of the record owner. Linked to the userdb database through userauthorization_mir.',
+    `date_created` datetime(6) NOT NULL COMMENT 'The date_created is the record creation datetime UTC.',
+    `date_timestamp` datetime(6) NOT NULL COMMENT 'The date_timestamp is the datetime UTC of the last modification.',
+    `tzname_idn` smallint NOT NULL COMMENT 'The accaccprntaxposition_idnum of the TimeZone.',
+    `tzoffset` smallint NOT NULL COMMENT 'The number of the diference between ZeroTimeZone and the TimeZone where the record is created or updated.',
+    `table_history` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The table_history contain then change history of each column. The value is set only if it has changed from the previous value.',
+    PRIMARY KEY `accprntaxpositionidnum_aptpkey` (`accprntaxposition_idnum`) COMMENT 'The sequence autoincremental value.',
+    UNIQUE KEY `accprntaxpositionidnum_aptpuni` (`accprntaxposition_idnum`) COMMENT 'The accprntaxposition_idnum must be unique.',
+    KEY `accprntaxpositionidnum_aptpidx` (`accprntaxposition_idnum` ASC) /*!80000 INVISIBLE */ COMMENT 'The accprntaxposition_idnum alway must be indexed.',
+    UNIQUE KEY `accprntaxpositionid_aptpuni` (`accprntaxposition_id`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
+    KEY `accprntaxpositionid_aptpidx` (`accprntaxposition_id` ASC) /*!80000 INVISIBLE */ COMMENT 'The accprntaxposition_id alway must be indexed.',
+    UNIQUE KEY `afipdoctypevalue_aptpuni` (`afipdocumenttype_idn`, `afipdocumentvalue`) COMMENT 'A Document value must be unique for a Document Type.',
+    KEY `afipdoctypevalue_aptpidx` (`afipdocumenttype_idn` ASC, `afipdocumentvalue` ASC) /*!80000 INVISIBLE */ COMMENT 'The accprntaxposition_idnum must always be indexed.'
 ) ENGINE=InnoDB 
-	AUTO_INCREMENT=0 
-	DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
-	COMMENT='Contains the Mirror of the PrnTaxPosition_Tbl form ApoloPersons.
-The user never changed this table, it has been changed throw Kafka from the ApoloPersons.
-This table contain the information about the Persons tax position.';
+    AUTO_INCREMENT=0 
+    DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
+    COMMENT='Contains the Mirror of the prntaxposition_tbl form persondb.
+The user never changed this table, it has been changed throw Kafka from the persondb.
+This table contain the information about the Person tax position.';
 
 -- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
--- Create the Trigger Before Insert - AccPrnTaxPosition_Mir
+-- Create the Trigger Before Insert - accprntaxposition_mir
 USE accountingdb;
-DROP TRIGGER IF EXISTS `accountingdb`.`AccPrnTaxPositionBeforeInsert_Trg`;
+DROP TRIGGER IF EXISTS `accountingdb`.`accprntaxpositionBeforeInsert_Trg`;
 DELIMITER $$
 USE `accountingdb`$$
 -- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
-CREATE TRIGGER `AccPrnTaxPositionBeforeInsert_Trg` BEFORE INSERT ON `AccPrnTaxPosition_Mir` FOR EACH ROW BEGIN
-	-- In the case, which the request do not give this value, MySql created it.
-	-- Set the ID uniqueidentifier, IDCode, DateCreated and DateTimeStamp
-	IF new.ID IS NULL OR new.ID = '' THEN
-		SET new.ID = uuid();				-- Set the UniqueIdentifier Value
-	END IF;
-	SET new.DateCreated = ifnull(new.DateCreated,CURRENT_TIMESTAMP);
-	SET new.DateTimeStamp = ifnull(new.DateTimeStamp,CURRENT_TIMESTAMP);
+CREATE TRIGGER `accprntaxpositionBeforeInsert_Trg` BEFORE INSERT ON `accprntaxposition_mir` FOR EACH ROW BEGIN
+    -- In the case, which the request do not give this value, MySql created it.
+    -- Set the baseelement_id uniqueidentifier, id_order, date_created and date_timestamp
+    IF new.accprntaxposition_id IS NULL OR new.accprntaxposition_id = '' THEN
+        SET new.accprntaxposition_id = uuid(); -- Set the UniqueIdentifier Value
+    END IF;
+    SET new.date_created = ifnull(new.date_created,CURRENT_TIMESTAMP);
+    SET new.date_timestamp = ifnull(new.date_timestamp,CURRENT_TIMESTAMP);
 END$$
 DELIMITER ;
 
 -- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
--- Create the Trigger Before Update - AccPrnTaxPosition_Mir
+-- Create the Trigger Before Update - accprntaxposition_mir
 -- en caso que desde Java no pasen la informacion de estos campos,
--- establece el valor del DateTimeStamp, TableHistory creando el historico de cada registro
+-- establece el valor del date_timestamp, table_history creando el historico de cada registro
 USE accountingdb;
-DROP TRIGGER IF EXISTS `accountingdb`.`AccPrnTaxPositionBeforeUpdate_Trg`;
+DROP TRIGGER IF EXISTS `accountingdb`.`accprntaxpositionBeforeUpdate_Trg`;
 DELIMITER $$
 USE `accountingdb`$$
 -- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
-CREATE TRIGGER `AccPrnTaxPositionBeforeUpdate_Trg` BEFORE UPDATE ON `AccPrnTaxPosition_Mir` FOR EACH ROW BEGIN
-	DECLARE v_TableHistory text;
-	DECLARE v_TableHistoryOld text;
-	SET new.DateTimeStamp = ifnull(new.DateTimeStamp,CURRENT_TIMESTAMP);
-    IF new.TableHistory = 'SetNull' THEN
-		SET new.TableHistory = null;
-    ELSEIF new.TableHistory = 'SetOff' THEN
-		SET new.TableHistory = old.TableHistory;
+CREATE TRIGGER `accprntaxpositionBeforeUpdate_Trg` BEFORE UPDATE ON `accprntaxposition_mir` FOR EACH ROW BEGIN
+    DECLARE v_tablehistory text;
+    DECLARE v_tablehistoryold text;
+    SET new.date_timestamp = ifnull(new.date_timestamp,CURRENT_TIMESTAMP);
+    IF new.table_history = 'SetNull' THEN
+        SET new.table_history = null;
+    ELSEIF new.table_history = 'SetOff' THEN
+        SET new.table_history = old.table_history;
     ELSE
-		-- When the (New) value is equal the (Old), you set an empty update, because the value is steal in the record.
-		-- When the (New) value is diferent with the (Old), you set the old value in the update. The new value is in the record.
-		SET v_TableHistoryOld := old.TableHistory;
-		SET v_TableHistory = '';
-		-- IDNum, this value never changes.
-		-- ID, this value never changes.
-		IF NEW.AfipDocumentTypeIDn <> OLD.AfipDocumentTypeIDn THEN SET v_TableHistory := OLD.AfipDocumentTypeIDn; ELSE SET v_TableHistory := '†'; END IF;
-		IF NEW.AfipDocumentValue <> OLD.AfipDocumentValue THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.AfipDocumentValue); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-		IF NEW.AfipDocumentName <> OLD.AfipDocumentName THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.AfipDocumentName); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-		IF NEW.StateIDn <> OLD.StateIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.StateIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-		IF NEW.CreatedByIDn <> OLD.CreatedByIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.CreatedByIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-		IF NEW.LastModifiedByIDn <> OLD.LastModifiedByIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.LastModifiedByIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-		IF NEW.OwnerIDn <> OLD.OwnerIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.OwnerIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-		IF v_TableHistoryOld IS NULL THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',NEW.DateCreated); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-		IF NEW.DateTimeStamp <> OLD.DateTimeStamp THEN SET v_TableHistory := concat(v_TableHistory,'†',OLD.DateTimeStamp); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-		IF NEW.TzNameIDn <> OLD.TzNameIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.TzNameIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-		IF NEW.TzOffset <> OLD.TzOffset THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.TzOffset); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-		IF v_TableHistoryOld IS NULL THEN
-			SET NEW.TableHistory := v_TableHistory;
-		ELSE
-			SET NEW.TableHistory := concat(v_TableHistory,'‡',v_TableHistory);
-		END IF;
-	END IF;
+        -- When the (New) value is equal the (Old), you set an empty update, because the value is steal in the record.
+        -- When the (New) value is diferent with the (Old), you set the old value in the update. The new value is in the record.
+        SET v_tablehistoryold := old.table_history;
+        SET v_tablehistory = '';
+        -- accprntaxposition_idnum, this value never changes.
+        -- accprntaxposition_id, this value never changes.
+        IF NEW.afipdocumenttype_idn <> OLD.afipdocumenttype_idn THEN SET v_tablehistory := OLD.afipdocumenttype_idn; ELSE SET v_tablehistory := '†'; END IF;
+        IF NEW.afipdocumentvalue <> OLD.afipdocumentvalue THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.afipdocumentvalue); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.afipdocumentname <> OLD.afipdocumentname THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.afipdocumentname); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.state_idn <> OLD.state_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.state_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.createdby_idn <> OLD.createdby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.createdby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.lastmodifiedby_idn <> OLD.lastmodifiedby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.lastmodifiedby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.ownedby_idn <> OLD.ownedby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.ownedby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF v_tablehistoryold IS NULL THEN
+            SET v_tablehistory := CONCAT(v_tablehistory,'†',NEW.date_created); 
+            -- This only add the date_created if is the first time that are going to set up the history value.
+        ELSE 
+            SET v_tablehistory := CONCAT(v_tablehistory,'†'); 
+            -- Do not add a date_created, the record only have the first one.
+        END IF;
+        IF NEW.date_timestamp <> OLD.date_timestamp THEN SET v_tablehistory := concat(v_tablehistory,'†',OLD.date_timestamp); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.tzname_idn <> OLD.tzname_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.tzname_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.tzoffset <> OLD.tzoffset THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.tzoffset); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF v_tablehistoryold IS NULL THEN
+            SET NEW.table_history := v_tablehistory;
+            -- This line ensures add the first history value.
+        ELSE
+            SET NEW.table_history := concat(v_tablehistory,'‡',v_tablehistory);
+            -- This line concat the new and old history value.
+        END IF;
+    END IF;
 END$$
 DELIMITER ;
 
 -- Lista los datos de la tabla
-SELECT * FROM `accountingdb`.`AccPrnTaxPosition_Mir`;
+SELECT * FROM `accountingdb`.`accprntaxposition_mir`;
