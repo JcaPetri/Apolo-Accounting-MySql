@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS `accountingdb`.`accafipivasalereceipt_tbl`;
 CREATE TABLE `accountingdb`.`accafipivasalereceipt_tbl` (
     `accafipivasalereceipt_idnum` int NOT NULL AUTO_INCREMENT COMMENT 'The accafipivasalereceipt_idnum is the autoincrement number', 
     `accafipivasalereceipt_id` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The accafipivasalereceipt_id is the uniqueidentifier auto generated V4',
-    `afipiva_idn` int NOT NULL COMMENT 'The afipiva_idn is the accafipivasalereceipt_idnum of the table who has the general information.',
+    `afipperiod_idn` int NOT NULL COMMENT 'The afipperiod_idn is the accafipivasalereceipt_idnum of the table who has the general information.',
     `receiptdate` datetime NOT NULL COMMENT 'The Date of the Receipt is the record creation date with UTC.',
     `sellerreceipttype_idn` int NOT NULL COMMENT 'The sellerreceipttype_idn is the IdNum of the table 1538-AccAfipSalesReceiptTypes_tbl, could be FC A, B, NC A, B, etc.',
     `pointsales_idn` int NOT NULL COMMENT 'The pointsales_idn is the IdNum of the table 1542-AccAfipPointSales_tbl. This is diferent of PurchasePointSales, because we created previously in the system.',
@@ -57,7 +57,7 @@ CREATE TABLE `accountingdb`.`accafipivasalereceipt_tbl` (
     KEY `salerecpointnumber_aivrsidx` (`sellerreceipttype_idn`,`pointsales_idn`,`receiptnumber`) /*!80000 INVISIBLE */ COMMENT 'The document combination must be indexed.',
     KEY `afipsubjectidn_aivrsidx` (`afipsubject_idn`) /*!80000 INVISIBLE */ COMMENT 'The afipsubject_idn is the cuit, lc, dni.',
     KEY `receiptdate_aivrsidx` (`receiptdate`) /*!80000 INVISIBLE */ COMMENT 'The date',
-    KEY `afipivaidn_aivrsidx` (`afipiva_idn`) /*!80000 INVISIBLE */ COMMENT 'The afipiva_idn'
+    KEY `afipperiodidn_aivrsidx` (`afipperiod_idn`) /*!80000 INVISIBLE */ COMMENT 'The afipperiod_idn'
 ) ENGINE=InnoDB 
     AUTO_INCREMENT=0 
     DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
@@ -107,34 +107,33 @@ CREATE TRIGGER `accafipivasalereceiptBeforeUpdate_Trg` BEFORE UPDATE ON `accafip
         SET v_tablehistory = '';
         -- accafipivasalereceipt_idnum, this value never changes.
         -- accafipivasalereceipt_id, this value never changes.
-
-    IF NEW.afipiva_idn <> OLD.afipiva_idn THEN SET v_TableHistory := OLD.afipiva_idn; ELSE SET v_TableHistory := '†'; END IF;
-    IF NEW.receiptdate <> OLD.receiptdate THEN SET v_TableHistory := OLD.receiptdate; ELSE SET v_TableHistory := '†'; END IF;
-    IF NEW.sellerreceipttype_idn <> OLD.sellerreceipttype_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.sellerreceipttype_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.pointsales_idn <> OLD.pointsales_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.pointsales_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.receiptnumber <> OLD.receiptnumber THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.receiptnumber); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.receiptnumberTo <> OLD.receiptnumberTo THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.receiptnumberTo); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.buyerdocumentcode_idn <> OLD.buyerdocumentcode_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.buyerdocumentcode_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.afipsubject_idn <> OLD.afipsubject_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.afipsubject_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.buyername <> OLD.buyername THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.buyername); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.totaloperation <> OLD.totaloperation THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.totaloperation); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.conceptsnotmakeupiva <> OLD.conceptsnotmakeupiva THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.conceptsnotmakeupiva); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.uncategorizedperception <> OLD.uncategorizedperception THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.uncategorizedperception); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.exemptoperations <> OLD.exemptoperations THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.exemptoperations); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.paymentperceptionnationaltaxes <> OLD.paymentperceptionnationaltaxes THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.paymentperceptionnationaltaxes); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.grossincomeperception <> OLD.grossincomeperception THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.grossincomeperception); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.municipaltaxperceptions <> OLD.municipaltaxperceptions THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.municipaltaxperceptions); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.internaltaxes <> OLD.internaltaxes THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.internaltaxes); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.currency_idn <> OLD.currency_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.currency_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.exchangerate <> OLD.exchangerate THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.exchangerate); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.numberivarates <> OLD.numberivarates THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.numberivarates); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.selleroperation_idn <> OLD.selleroperation_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.selleroperation_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.othertaxes <> OLD.othertaxes THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.othertaxes); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.paymentduerate <> OLD.paymentduerate THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.paymentduerate); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.computabletaxcredit <> OLD.computabletaxcredit THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.computabletaxcredit); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.issuercuit_idn <> OLD.issuercuit_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.issuercuit_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.issuername <> OLD.issuername THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.issuername); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-    IF NEW.commisioniva <> OLD.commisioniva THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.commisioniva); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.afipperiod_idn <> OLD.afipperiod_idn THEN SET v_TableHistory := OLD.afipperiod_idn; ELSE SET v_TableHistory := '†'; END IF;
+        IF NEW.receiptdate <> OLD.receiptdate THEN SET v_TableHistory := OLD.receiptdate; ELSE SET v_TableHistory := '†'; END IF;
+        IF NEW.sellerreceipttype_idn <> OLD.sellerreceipttype_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.sellerreceipttype_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.pointsales_idn <> OLD.pointsales_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.pointsales_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.receiptnumber <> OLD.receiptnumber THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.receiptnumber); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.receiptnumberTo <> OLD.receiptnumberTo THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.receiptnumberTo); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.buyerdocumentcode_idn <> OLD.buyerdocumentcode_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.buyerdocumentcode_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.afipsubject_idn <> OLD.afipsubject_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.afipsubject_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.buyername <> OLD.buyername THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.buyername); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.totaloperation <> OLD.totaloperation THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.totaloperation); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.conceptsnotmakeupiva <> OLD.conceptsnotmakeupiva THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.conceptsnotmakeupiva); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.uncategorizedperception <> OLD.uncategorizedperception THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.uncategorizedperception); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.exemptoperations <> OLD.exemptoperations THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.exemptoperations); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.paymentperceptionnationaltaxes <> OLD.paymentperceptionnationaltaxes THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.paymentperceptionnationaltaxes); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.grossincomeperception <> OLD.grossincomeperception THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.grossincomeperception); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.municipaltaxperceptions <> OLD.municipaltaxperceptions THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.municipaltaxperceptions); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.internaltaxes <> OLD.internaltaxes THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.internaltaxes); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.currency_idn <> OLD.currency_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.currency_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.exchangerate <> OLD.exchangerate THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.exchangerate); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.numberivarates <> OLD.numberivarates THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.numberivarates); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.selleroperation_idn <> OLD.selleroperation_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.selleroperation_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.othertaxes <> OLD.othertaxes THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.othertaxes); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.paymentduerate <> OLD.paymentduerate THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.paymentduerate); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.computabletaxcredit <> OLD.computabletaxcredit THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.computabletaxcredit); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.issuercuit_idn <> OLD.issuercuit_idn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.issuercuit_idn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.issuername <> OLD.issuername THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.issuername); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
+        IF NEW.commisioniva <> OLD.commisioniva THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.commisioniva); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
         IF NEW.state_idn <> OLD.state_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.state_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
         IF NEW.createdby_idn <> OLD.createdby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.createdby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
         IF NEW.lastmodifiedby_idn <> OLD.lastmodifiedby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.lastmodifiedby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
