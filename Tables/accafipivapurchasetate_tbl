@@ -1,43 +1,43 @@
 -- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
--- Create the AccAfipIvaPurchaseRates_Tbl table
+-- Create the accafipivapurchaserate_tbl table
 /*Contains the receipts purchase information stored in the AFIP.
 This information is chargered automatically by the software. 
 The user should never change this table.*/
 -- #########################################################################################################################################################################################
 -- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Delete the table AccAfipIvaPurchaseRates_Tbl if Exits, but first you must to altere the tables that have a referenced foreign key
+-- Delete the table accafipivapurchaserate_tbl if Exits, but first you must to altere the tables that have a referenced foreign key
 USE accountingdb;
 
 -- After deleted the referenced, you can delete the table
-DROP TABLE IF EXISTS `accountingdb`.`AccAfipIvaPurchaseRates_Tbl`;
+DROP TABLE IF EXISTS `accountingdb`.`accafipivapurchaserate_tbl`;
 
-CREATE TABLE `accountingdb`.`AccAfipIvaPurchaseRates_Tbl` (
-    `IDNum` int NOT NULL AUTO_INCREMENT COMMENT 'The IDNum is the autoincrement number', 
-    `ID` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The ID is the uniqueidentifier auto generated V4', 
-    `PurchaseReceiptTypeIDn` int NOT NULL COMMENT 'The PurchaseReceiptTypeIDn is the IdNum of the table 1539-AccAfipPurchaseReceiptTypes_Tbl, could be FC A, B, NC A, B, etc.',
-    `PointSaleIDn` int NOT NULL COMMENT 'Is a integer number up of zero. It depend of the seller.',
-    `ReceiptNumber` int NOT NULL COMMENT 'Is a integer number up of zero.',
-    `BuyerDocumentIDn` int NOT NULL COMMENT 'The BuyerDocumentIDn is the IdNum of the table 1541-AccAfipBuyerDocuments_Tbl, could be CUIT, DNI, etc.',
-    `AfipSubjectIDn` int NOT NULL COMMENT 'The AfipSubjectIDn is the IdNum of the table 1634-AccPrnAfipSubject_Mir, is the CUIT, LC, LE, etc, number.',
-    `NetAmountTaxed` decimal(11,4) NOT NULL COMMENT 'Is a numeric number with 4 zero',
-    `IvaRateIDn` int NOT NULL COMMENT 'The IvaRateIDn is the IdNum of the table 1543-AccAfipIvaRates_Tbl.',
-    `TaxSettled` decimal(11,4) NOT NULL COMMENT 'The value of the Tax settled.',
-    `StateIDn` smallint NOT NULL COMMENT 'The StatedIDn define if the record is enable or not.',
-    `CreatedByIDn` int NOT NULL COMMENT 'The CreatedByIDn is the IdNum of the user who created the record.',
-    `LastModifiedByIDn` int NOT NULL COMMENT 'The LastModifiedByIDn is the IdNum of the last user who modified the record.',
-    `OwnerIDn` int NOT NULL COMMENT 'The OwnerIDn is the IdNum of the record owner.',
-    `DateCreated` datetime NOT NULL COMMENT 'The DateCreated is the record creation date with UTC.',
-    `DateTimeStamp` timestamp NOT NULL COMMENT 'The DateTimeStamp is the date of the last modification of the record with UTC.',
-    `TzNameIDn` smallint NOT NULL COMMENT 'The IDNum of the TimeZone',				
-    `TzOffset` smallint NOT NULL COMMENT 'The diferences between ZeroTimeZone and the TimeZone where the record is created or updated.',					
-    `TableHistory` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The TableHistory contain then change history of each column.',
-    PRIMARY KEY `ID_AIprPriKey` (`IDNum`) COMMENT 'The sequence AccAfipIvaPurchaseRates_Tbl generate the nextval',
-    UNIQUE KEY `ID_AIprUnique` (`ID`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
-    UNIQUE KEY `IDNum_AIprUnique` (`IDNum`) COMMENT 'The IDNum must be unique.',
-    KEY `ID_AIprIdx` (`ID`) /*!80000 INVISIBLE */ COMMENT 'The ID alway must be indexed.',
-    KEY `IDNum_AIprIdx` (`IDNum`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
-    KEY `PurchaseRecPointNumber_AIprIdx` (`PurchaseReceiptTypeIDn`,`PointSaleIDn`,`ReceiptNumber`) /*!80000 INVISIBLE */ COMMENT 'The IDNum must always be indexed.',
-    KEY `AfipSubjectIDn_AIprIdx` (`AfipSubjectIDn`) /*!80000 INVISIBLE */ COMMENT 'The AfipSubjectIDn is the cuit, lc, dni.'
+CREATE TABLE `accountingdb`.`accafipivapurchaserate_tbl` (
+    `accafipivapurchaserate_idnum` int NOT NULL AUTO_INCREMENT COMMENT 'The accafipivapurchaserate_idnum is the autoincrement number', 
+    `accafipivapurchaserate_id` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The accafipivapurchaserate_id is the uniqueidentifier auto generated V4', 
+    `purchasereceipttype_idn` int NOT NULL COMMENT 'The purchasereceipttype_idn is the IdNum of the table 1539-AccAfipPurchaseReceiptTypes_Tbl, could be FC A, B, NC A, B, etc.',
+    `pointsale_idn` int NOT NULL COMMENT 'Is a integer number up of zero. It depend of the seller.',
+    `receiptnumber` int NOT NULL COMMENT 'Is a integer number up of zero.',
+    `buyerdocument_idn` int NOT NULL COMMENT 'The buyerdocument_idn is the IdNum of the table 1541-AccAfipBuyerDocuments_Tbl, could be CUIT, DNI, etc.',
+    `afipsubject_idn` int NOT NULL COMMENT 'The afipsubject_idn is the IdNum of the table 1634-AccPrnAfipSubject_Mir, is the CUIT, LC, LE, etc, number.',
+    `netamounttaxed` decimal(11,4) NOT NULL COMMENT 'Is a numeric number with 4 zero',
+    `ivarate_idn` int NOT NULL COMMENT 'The ivarate_idn is the IdNum of the table 1543-AccAfipIvaRates_Tbl.',
+    `taxsettled` decimal(11,4) NOT NULL COMMENT 'The value of the Tax settled.',
+    `state_idn` smallint NOT NULL COMMENT 'The stated_idn define if the record is enable or not, or the custom state difined. Linked to the system database through sysbaseelement_mir.',
+    `createdby_idn` int NOT NULL COMMENT 'The createdby_idn is the user_idnum of the user who created the record. Linked to the userdb database through userauthorization_tbl.',
+    `lastmodifiedby_idn` int NOT NULL COMMENT 'The lastmodifiedby_idn is the user_idnum of the last one that modified the record. Linked to the userdb database through userauthorization_tbl.',
+    `ownedby_idn` int NOT NULL COMMENT 'The ownedby_idn is the user_idnum of the record owner. Linked to the userdb database through userauthorization_tbl.',
+    `date_created` datetime(6) NOT NULL COMMENT 'The date_created is the record creation datetime UTC.',
+    `date_timestamp` datetime(6) NOT NULL COMMENT 'The date_timestamp is the datetime UTC of the last modification.',
+    `tzname_idn` smallint NOT NULL COMMENT 'The sysbaseelement_idnum of the TimeZone. Linked to the system database through sysbaseelement_mir.',		
+    `tzoffset` smallint NOT NULL COMMENT 'The number of the diference between ZeroTimeZone and the TimeZone where the record is created or updated.',
+    `table_history` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The table_history contain then change history of each column. The value is set only if it has changed from the previous value.',
+    PRIMARY KEY `accafipivapurchaserateidum_aivprkey` (`accafipivapurchaserate_idnum`) COMMENT 'The sequence accafipivapurchaserate_tbl generate the nextval',
+    UNIQUE KEY `accafipivapurchaserateidnum_aivpruni` (`accafipivapurchaserate_idnum`) COMMENT 'The accafipivapurchaserate_idnum must be unique.',
+    KEY `accafipivapurchaserateidnum_aivpridx` (`accafipivapurchaserate_idnum`) /*!80000 INVISIBLE */ COMMENT 'The accafipivapurchaserate_idnum must always be indexed.',
+    UNIQUE KEY `accafipivapurchaserateid_aivpruni` (`accafipivapurchaserate_id`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
+    KEY `accafipivapurchaserateid_aivpridx` (`accafipivapurchaserate_id`) /*!80000 INVISIBLE */ COMMENT 'The accafipivapurchaserate_id alway must be indexed.',
+    KEY `purchaserecpointnumber_aivpridx` (`purchasereceipttype_idn`,`pointsale_idn`,`receiptnumber`) /*!80000 INVISIBLE */ COMMENT 'The accafipivapurchaserate_idnum must always be indexed.',
+    KEY `afipsubjectidn_aivpridx` (`afipsubject_idn`) /*!80000 INVISIBLE */ COMMENT 'The afipsubject_idn is the cuit, lc, dni.'
 ) ENGINE=InnoDB 
     AUTO_INCREMENT=0 
     DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
@@ -46,71 +46,79 @@ This information is chargered automatically by the software.
 The user should never change this table.';
 
 -- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
--- Create the Trigger Before Insert - AccAfipIvaPurchaseRates_Tbl
+-- Create the Trigger Before Insert - accdataelement_tbl
 USE accountingdb;
-DROP TRIGGER IF EXISTS `accountingdb`.`AccAfipIvaPurchaseRatesBeforeInsert_Trg`;
+DROP TRIGGER IF EXISTS `accountingdb`.`accafipivapurchaserateBeforeInsert_Trg`;
 DELIMITER $$
 USE `accountingdb`$$
--- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
-CREATE TRIGGER `AccAfipIvaPurchaseRatesBeforeInsert_Trg` BEFORE INSERT ON `AccAfipIvaPurchaseRates_Tbl` FOR EACH ROW BEGIN
+    -- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
+CREATE TRIGGER `accafipivapurchaserateBeforeInsert_Trg` BEFORE INSERT ON `accafipivapurchaserate_tbl` FOR EACH ROW BEGIN
     -- In the case, which the request do not give this value, MySql created it.
-    -- Set the ID uniqueidentifier, IDCode, DateCreated and DateTimeStamp
-    IF new.ID IS NULL OR new.ID = '' THEN
-        SET new.ID = uuid();				-- Set the UniqueIdentifier Value
+    -- Set the ID uniqueidentifier, id_order, date_created and date_timestamp
+    IF new.accafipivapurchaserate_id IS NULL OR new.accafipivapurchaserate_id = '' THEN
+        SET new.accafipivapurchaserate_id = uuid(); -- Set the UniqueIdentifier Value
     END IF;
-    SET new.DateCreated = ifnull(new.DateCreated,CURRENT_TIMESTAMP);
-    SET new.DateTimeStamp = ifnull(new.DateTimeStamp,CURRENT_TIMESTAMP);
+    SET new.date_created = ifnull(new.date_created,CURRENT_TIMESTAMP);
+    SET new.date_timestamp = ifnull(new.date_timestamp,CURRENT_TIMESTAMP);
 END$$
 DELIMITER ;
 
 -- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
--- Create the Trigger Before Update - AccAfipIvaPurchaseRates_Tbl
+-- Create the Trigger Before Update - accdataelement_tbl
 -- en caso que desde Java no pasen la informacion de estos campos,
--- establece el valor del DateTimeStamp, TableHistory creando el historico de cada registro
+-- establece el valor del date_timestamp, table_history creando el historico de cada registro
 USE accountingdb;
-DROP TRIGGER IF EXISTS `accountingdb`.`AccAfipIvaPurchaseRatesBeforeUpdate_Trg`;
+DROP TRIGGER IF EXISTS `accountingdb`.`accafipivapurchaserateBeforeUpdate_Trg`;
 DELIMITER $$
 USE `accountingdb`$$
--- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
-CREATE TRIGGER `AccAfipIvaPurchaseRatesBeforeUpdate_Trg` BEFORE UPDATE ON `AccAfipIvaPurchaseRates_Tbl` FOR EACH ROW BEGIN
-    DECLARE v_TableHistory text;
-    DECLARE v_TableHistoryOld text;
-    SET new.DateTimeStamp = ifnull(new.DateTimeStamp,CURRENT_TIMESTAMP);
-    IF new.TableHistory = 'SetNull' THEN
-        SET new.TableHistory = null;
-    ELSEIF new.TableHistory = 'SetOff' THEN
-        SET new.TableHistory = old.TableHistory;
+    -- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
+CREATE TRIGGER `accafipivapurchaserateBeforeUpdate_Trg` BEFORE UPDATE ON `accafipivapurchaserate_tbl` FOR EACH ROW BEGIN
+    DECLARE v_tablehistory text;
+    DECLARE v_tablehistoryold text;
+    SET new.date_timestamp = ifnull(new.date_timestamp,CURRENT_TIMESTAMP);
+    IF new.table_history = 'setnull' THEN
+        SET new.table_history = null;
+    ELSEIF new.table_history = 'setoff' THEN
+        SET new.table_history = old.table_history;
     ELSE
-    -- When the (New) value is equal the (Old), you set an empty update, because the value is steal in the record.
-    -- When the (New) value is diferent with the (Old), you set the old value in the update. The new value is in the record.
-        SET v_TableHistoryOld := old.TableHistory;
-        SET v_TableHistory = '';
-        -- IDNum, this value never changes.
-        -- ID, this value never changes.
-        IF NEW.PurchaseReceiptTypeIDn <> OLD.PurchaseReceiptTypeIDn THEN SET v_TableHistory := OLD.PurchaseReceiptTypeIDn; ELSE SET v_TableHistory := '†'; END IF;
-        IF NEW.PointSaleIDn <> OLD.PointSaleIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.PointSaleIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.ReceiptNumber <> OLD.ReceiptNumber THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.ReceiptNumber); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.BuyerDocumentIDn <> OLD.BuyerDocumentIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.BuyerDocumentIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.AfipSubjectIDn <> OLD.AfipSubjectIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.AfipSubjectIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.NetAmountTaxed <> OLD.NetAmountTaxed THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.NetAmountTaxed); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.IvaRateIDn <> OLD.IvaRateIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.IvaRateIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.TaxSettled <> OLD.TaxSettled THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.TaxSettled); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.StateIDn <> OLD.StateIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.StateIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.CreatedByIDn <> OLD.CreatedByIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.CreatedByIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.LastModifiedByIDn <> OLD.LastModifiedByIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.LastModifiedByIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.OwnerIDn <> OLD.OwnerIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.OwnerIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF v_TableHistoryOld IS NULL THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',NEW.DateCreated); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.DateTimeStamp <> OLD.DateTimeStamp THEN SET v_TableHistory := concat(v_TableHistory,'†',OLD.DateTimeStamp); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.TzNameIDn <> OLD.TzNameIDn THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.TzNameIDn); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF NEW.TzOffset <> OLD.TzOffset THEN SET v_TableHistory := CONCAT(v_TableHistory,'†',OLD.TzOffset); ELSE SET v_TableHistory := CONCAT(v_TableHistory,'†'); END IF;
-        IF v_TableHistoryOld IS NULL THEN
-                SET NEW.TableHistory := v_TableHistory;
+        -- When the (New) value is equal the (Old), you set an empty update, because the value is steal in the record.
+        -- When the (New) value is diferent with the (Old), you set the old value in the update. The new value is in the record.
+        SET v_tablehistoryold := old.table_history;
+        SET v_tablehistory = '';
+        -- accafipivapurchaserate_idnum, this value never changes.
+        -- accafipivapurchaserate_id, this value never changes.
+        IF NEW.purchasereceipttype_idn <> OLD.purchasereceipttype_idn THEN SET v_tablehistory := OLD.purchasereceipttype_idn; ELSE SET v_tablehistory := '†'; END IF;
+        IF NEW.pointsale_idn <> OLD.pointsale_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.pointsale_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.receiptnumber <> OLD.receiptnumber THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.receiptnumber); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.buyerdocument_idn <> OLD.buyerdocument_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.buyerdocument_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.afipsubject_idn <> OLD.afipsubject_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.afipsubject_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.netamounttaxed <> OLD.netamounttaxed THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.netamounttaxed); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.ivarate_idn <> OLD.ivarate_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.ivarate_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.taxsettled <> OLD.taxsettled THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.taxsettled); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.state_idn <> OLD.state_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.state_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.createdby_idn <> OLD.createdby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.createdby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.lastmodifiedby_idn <> OLD.lastmodifiedby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.lastmodifiedby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.ownedby_idn <> OLD.ownedby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.ownedby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF v_tablehistoryold IS NULL THEN
+            SET v_tablehistory := CONCAT(v_tablehistory,'†',NEW.date_created); 
+            -- This only add the date_created if is the first time that are going to set up the history value.
+        ELSE 
+            SET v_tablehistory := CONCAT(v_tablehistory,'†'); 
+            -- Do not add a date_created, the record only have the first one.
+        END IF;
+        IF NEW.date_timestamp <> OLD.date_timestamp THEN SET v_tablehistory := concat(v_tablehistory,'†',OLD.date_timestamp); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.tzname_idn <> OLD.tzname_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.tzname_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.tzoffset <> OLD.tzoffset THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.tzoffset); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF v_tablehistoryold IS NULL THEN
+            SET NEW.table_history := v_tablehistory;
+            -- This line ensures add the first history value.
         ELSE
-                SET NEW.TableHistory := concat(v_TableHistory,'‡',v_TableHistory);
+            SET NEW.table_history := concat(v_tablehistory,'‡',v_tablehistory);
+            -- This line concat the new and old history value.
         END IF;
     END IF;
 END$$
 DELIMITER ;
 
 -- Lista los datos de la tabla
-SELECT * FROM `accountingdb`.`AccAfipIvaPurchaseRates_Tbl`;
+SELECT * FROM `accountingdb`.`accafipivapurchaserate_tbl`;
