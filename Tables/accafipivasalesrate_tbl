@@ -1,0 +1,119 @@
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the accafipivasalesrate_tbl table
+/*Contains the receipts sales information stored in the AFIP.
+This information is chargered automatically by the software. 
+The user should never change this table.*/
+-- #########################################################################################################################################################################################
+-- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Delete the table accafipivasalesrate_tbl if Exits, but first you must to altere the tables that have a referenced foreign key
+USE accountingdb;
+
+-- After deleted the referenced, you can delete the table
+DROP TABLE IF EXISTS `accountingdb`.`accafipivasalesrate_tbl`;
+
+CREATE TABLE `accountingdb`.`accafipivasalesrate_tbl` (
+    `accafipivasalesrate_idnum` int NOT NULL AUTO_INCREMENT COMMENT 'The accafipivasalesrate_idnum is the autoincrement number', 
+    `accafipivasalesrate_id` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The accafipivasalesrate_id is the uniqueidentifier auto generated V4', 
+    `salesreceipttype_idn` int NOT NULL COMMENT 'The salesreceipttype_idn is the IdNum of the table 1538-AccAfipSalesReceiptTypes_Tbl, could be FC A, B, NC A, B, etc.',
+    `pointsale_idn` int NOT NULL COMMENT 'The pointsale_idn is the IdNum of the table 1543-AccAfipPointSales_Tbl, could be 0001, 0002, ... etc.',
+    `receiptnumber` int NOT NULL COMMENT 'Is a integer number up of zero.',
+    `netamounttaxed` decimal(11,4) NOT NULL COMMENT 'Is a numeric number with 4 zero',
+    `ivarate_idn` int NOT NULL COMMENT 'The ivarate_idn is the IdNum of the table 1543-AccAfipIvaRates_Tbl.',
+    `taxsettled` decimal(11,4) NOT NULL COMMENT 'The value of the Tax settled.',
+    `state_idn` smallint NOT NULL COMMENT 'The stated_idn define if the record is enable or not, or the custom state difined. Linked to the system database through sysbaseelement_mir.',
+    `createdby_idn` int NOT NULL COMMENT 'The createdby_idn is the user_idnum of the user who created the record. Linked to the userdb database through userauthorization_tbl.',
+    `lastmodifiedby_idn` int NOT NULL COMMENT 'The lastmodifiedby_idn is the user_idnum of the last one that modified the record. Linked to the userdb database through userauthorization_tbl.',
+    `ownedby_idn` int NOT NULL COMMENT 'The ownedby_idn is the user_idnum of the record owner. Linked to the userdb database through userauthorization_tbl.',
+    `date_created` datetime(6) NOT NULL COMMENT 'The date_created is the record creation datetime UTC.',
+    `date_timestamp` datetime(6) NOT NULL COMMENT 'The date_timestamp is the datetime UTC of the last modification.',
+    `tzname_idn` smallint NOT NULL COMMENT 'The sysbaseelement_idnum of the TimeZone. Linked to the system database through sysbaseelement_mir.',		
+    `tzoffset` smallint NOT NULL COMMENT 'The number of the diference between ZeroTimeZone and the TimeZone where the record is created or updated.',
+    `table_history` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The table_history contain then change history of each column. The value is set only if it has changed from the previous value.',
+    PRIMARY KEY `accafipivasalesrateidnum_aivsrkey` (`accafipivasalesrate_idnum`) COMMENT 'The sequence accafipivasalesrate_tbl generate the nextval',
+    UNIQUE KEY `accafipivasalesrateidnum_aivsrruni` (`accafipivasalesrate_idnum`) COMMENT 'The accafipivasalesrate_idnum must be unique.',
+    KEY `accafipivasalesrateidnum_aivsrridx` (`accafipivasalesrate_idnum`) /*!80000 INVISIBLE */ COMMENT 'The accafipivasalesrate_idnum must always be indexed.',
+    UNIQUE KEY `accafipivasalesrateid_aivsruni` (`accafipivasalesrate_id`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
+    KEY `accafipivasalesrateid_aivsridx` (`accafipivasalesrate_id`) /*!80000 INVISIBLE */ COMMENT 'The ID alway must be indexed.',
+    KEY `SalesRecPointNumber_AIsrIdx` (`salesreceipttype_idn`,`pointsale_idn`,`receiptnumber`) /*!80000 INVISIBLE */ COMMENT 'The accafipivasalesrate_idnum must always be indexed.'
+) ENGINE=InnoDB 
+	AUTO_INCREMENT=0 
+	DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
+	COMMENT='Contains the receipts sales information stored in the AFIP.
+This information is chargered automatically by the software. 
+The user should never change this table.';
+
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the Trigger Before Insert - accdataelement_tbl
+USE accountingdb;
+DROP TRIGGER IF EXISTS `accountingdb`.`accafipivasalesrateBeforeInsert_Trg`;
+DELIMITER $$
+USE `accountingdb`$$
+    -- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
+CREATE TRIGGER `accafipivasalesrateBeforeInsert_Trg` BEFORE INSERT ON `accafipivasalesrate_tbl` FOR EACH ROW BEGIN
+    -- In the case, which the request do not give this value, MySql created it.
+    -- Set the ID uniqueidentifier, id_order, date_created and date_timestamp
+    IF new.accafipivasalesrate_id IS NULL OR new.accafipivasalesrate_id = '' THEN
+        SET new.accafipivasalesrate_id = uuid(); -- Set the UniqueIdentifier Value
+    END IF;
+    SET new.date_created = ifnull(new.date_created,CURRENT_TIMESTAMP);
+    SET new.date_timestamp = ifnull(new.date_timestamp,CURRENT_TIMESTAMP);
+END$$
+DELIMITER ;
+
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the Trigger Before Update - accdataelement_tbl
+-- en caso que desde Java no pasen la informacion de estos campos,
+-- establece el valor del date_timestamp, table_history creando el historico de cada registro
+USE accountingdb;
+DROP TRIGGER IF EXISTS `accountingdb`.`accafipivasalesrateBeforeUpdate_Trg`;
+DELIMITER $$
+USE `accountingdb`$$
+    -- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
+CREATE TRIGGER `accafipivasalesrateBeforeUpdate_Trg` BEFORE UPDATE ON `accafipivasalesrate_tbl` FOR EACH ROW BEGIN
+    DECLARE v_tablehistory text;
+    DECLARE v_tablehistoryold text;
+    SET new.date_timestamp = ifnull(new.date_timestamp,CURRENT_TIMESTAMP);
+    IF new.table_history = 'setnull' THEN
+        SET new.table_history = null;
+    ELSEIF new.table_history = 'setoff' THEN
+        SET new.table_history = old.table_history;
+    ELSE
+        -- When the (New) value is equal the (Old), you set an empty update, because the value is steal in the record.
+        -- When the (New) value is diferent with the (Old), you set the old value in the update. The new value is in the record.
+        SET v_tablehistoryold := old.table_history;
+        SET v_tablehistory = '';
+        -- accafipivasalesrate_idnum, this value never changes.
+        -- accafipivasalesrate_id, this value never changes.
+        IF NEW.salesreceipttype_idn <> OLD.salesreceipttype_idn THEN SET v_tablehistory := OLD.salesreceipttype_idn; ELSE SET v_tablehistory := '†'; END IF;
+        IF NEW.pointsale_idn <> OLD.pointsale_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.pointsale_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.receiptnumber <> OLD.receiptnumber THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.receiptnumber); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.netamounttaxed <> OLD.netamounttaxed THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.netamounttaxed); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.ivarate_idn <> OLD.ivarate_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.ivarate_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.taxsettled <> OLD.taxsettled THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.taxsettled); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.state_idn <> OLD.state_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.state_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.createdby_idn <> OLD.createdby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.createdby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.lastmodifiedby_idn <> OLD.lastmodifiedby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.lastmodifiedby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.ownedby_idn <> OLD.ownedby_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.ownedby_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF v_tablehistoryold IS NULL THEN
+            SET v_tablehistory := CONCAT(v_tablehistory,'†',NEW.date_created); 
+            -- This only add the date_created if is the first time that are going to set up the history value.
+        ELSE 
+            SET v_tablehistory := CONCAT(v_tablehistory,'†'); 
+            -- Do not add a date_created, the record only have the first one.
+        END IF;
+        IF NEW.date_timestamp <> OLD.date_timestamp THEN SET v_tablehistory := concat(v_tablehistory,'†',OLD.date_timestamp); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.tzname_idn <> OLD.tzname_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.tzname_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.tzoffset <> OLD.tzoffset THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.tzoffset); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF v_tablehistoryold IS NULL THEN
+            SET NEW.table_history := v_tablehistory;
+            -- This line ensures add the first history value.
+        ELSE
+            SET NEW.table_history := concat(v_tablehistory,'‡',v_tablehistory);
+            -- This line concat the new and old history value.
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+-- Lista los datos de la tabla
+SELECT * FROM `accountingdb`.`accafipivasalesrate_tbl`;
