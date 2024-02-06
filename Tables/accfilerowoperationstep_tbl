@@ -1,0 +1,131 @@
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the accfilerowoperationstep_tbl table
+-- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Delete the table accfilerowoperationstep_tbl if Exits, but first you must to altere the tables that have a referenced foreign key
+
+USE accountingdb;
+-- First you must to delete the Foreing Key Constraint;
+-- The referenced accfilerowoperationstep_tbl Tables:
+ALTER TABLE `accountingdb`.`artdataelementlanguag_tbl` DROP FOREIGN KEY `dataelementlanguageidn_adecrel`;
+ALTER TABLE `accountingdb`.`artdataelementcomment_tbl` DROP FOREIGN KEY `dataelementcommentidn_adecrel`;
+
+USE accountingdb;
+-- After deleted the referenced, you can delete the table
+DROP TABLE IF EXISTS `accountingdb`.`accfilerowoperationstep_tbl`;
+
+CREATE TABLE `accountingdb`.`accfilerowoperationstep_tbl` (
+    `filerowoperationstep_idn` int NOT NULL AUTO_INCREMENT COMMENT 'The filerowoperationstep_idn is the idnum of the each operation step to debug the file import.', 
+    `appliedtocolumn` varchar(250) NOT NULL COMMENT 'The appliedtocolumn is the list of columns separated by coma, in are going to applied the step operation.',
+    `fileoperation_steporder` smallint NOT NULL COMMENT 'The order of the process.',
+    `fileoperation_idn` int NOT NULL COMMENT 'The fileoperation_idn is idnum of the operation to applied. Linked to accdataelement_tbl.',
+    `fileoperation_value` varchar(250) NOT NULL COMMENT 'The fileoperation_value is the value set by the user to be used in the operation, can be number, string, etc.',
+    `fileoperationaction_idn` int NOT NULL COMMENT 'The fileoperationaction_idn is the action to execute if the operation is succed.',
+    `filerowoperation_idn` int NOT NULL COMMENT 'The filerowoperation_idn is the idnum of the father operation. Linked to accdataelement_tbl.',
+    `table_history` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The table_history contain then change history of each column. The value is set only if it has changed from the previous value.',
+    PRIMARY KEY `fileimportcriteriastageidn_afrokey` (`filerowoperationstep_idn`) COMMENT 'The value is created in the sysbaseelement_tbl.',
+    UNIQUE KEY `fileimportcriteriastageidn_afrosuni` (`filerowoperationstep_idn`) COMMENT 'The primarykey must be unique.',
+    KEY `fileimportcriteriastageidn_afrosidx` (`filerowoperationstep_idn`) /*!80000 INVISIBLE */ COMMENT 'The filerowoperationstep_idn must always be indexed.',
+    UNIQUE KEY `fileimpcristegcoloper_afrouni` (`filerowoperationstep_idn` ASC, `filerowoperation_idn` ASC) COMMENT 'For.',
+    CONSTRAINT `fileoperationidn_afrorel` FOREIGN KEY (`fileoperation_idn`) REFERENCES `accountingdb`.`accdataelement_tbl` (`dataelement_idnum`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fileoperationactionidn_afrorel` FOREIGN KEY (`fileoperationaction_idn`) REFERENCES `accountingdb`.`accdataelement_tbl` (`dataelement_idnum`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `filerowoperationidn_afrorel` FOREIGN KEY (`filerowoperation_idn`) REFERENCES `accountingdb`.`accdataelement_tbl` (`dataelement_idnum`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB 
+  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin 
+  COMMENT='Contains the rowtocolumnstep for each rowtocolumn list.
+Concept: this table is like the add column to the table accfilerowoperationstep_tbl.
+             the unique id, the idnum and the frowtocolumnstep name of the step is stored in the accdataelement_tbl
+The key for each record:
+    filerowoperationstep_idn --> is the autoincrement number is generated in the accdataelement_tbl.
+        Clarification: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table sysbaseelement_tbl or accfilerowoperationstep_tbl).
+The unique Key is the union of:
+    For the rowtocolumn operation you can have one diferent steps.
+        filerowoperationstep_idn -> the step of each operation.
+        filerowoperation_idn -> the row to column father, is the operation.';
+
+/*
+File Import - How it work: 
+    1.- accfileimport_tbl, it define the:
+           filepath is the file location.
+           filename is the name of the file.
+           importcriteria is the procedure to transform the data file in column and select the row to be imported.
+           filedataexport is the output of the file, can be a text file or a table.
+     2.- accfileimportcriteria_tbl, contain the list name of the criterias
+            One criteria can has one or more stages. (the stage is one combination of one rowtocolumn and rowoperation)
+            2.1.- accfilerowoperationstep_tbl
+                 here is set the combination of the:
+                       filerowtocolumn, this contain the definition to separete each row in column
+                       fielrowoperation, this perform one or more operation in the row and column
+                  ex: in one stage, the row is separated in two columns and delete the rows with the word Total
+                       in other stage, the row is separated by coma and you delete the empty rows.
+                 a) accfilerowtocolumn_tbl, contain the list name of the rowtocolumn
+                       each rowtocolumn can has more than one steps to transform the row in the correct column
+                       2.a.1- accfilerowoperationstep_tbl
+                             this table has the diferent step to separate the row in column
+                             ex: one step can separate with fixed values
+                                  one step can separate the column 2 and 4 by comas.
+                 b) accfilerowoperation_tbl, contain the list name of the operation
+                       each rowoperation can have more than one steps to transform define witch row are going to pass to the other step
+                       a.1- accfilerowoperationstep_tbl
+                             this table has the diferent step to define what to do, you must to select:
+                                   1.- accfileoperation_tbl has the operation to the row.
+                                   2.- accfileoperationaction_tbl has what to do if the confition is complied.
+                             ex: one operation can delete the row that have the word Total
+                                  one operation can delete the row that is empty.
+     3.- accdataexport_tbl, contain the export parameter:
+            dataexporttype, is the type of export, can be file or table.
+            dataexport, is the name of the procedure to make the export.
+                3.1- accdataexporttofile_tbl
+                      It is defined the parameter to make the export to file text.
+                3.2- accdataexporttotable_tbl
+                      targettable, is the table name that are going to receive the data.
+                      To define how each column of the array are going to load to the table, is needed to setup the mapping.
+                      3.2.1- accdatamapping_tbl, is defined the relation between the array and the field of the table.
+                               fieldorder, is the order of the mapping procedure.
+                               sourcefield, is the number of the array column. The user start in 1, but the array start in 0
+                               sourceignored, is some column of the array does not fit to a table field.
+                               dataconvert, if to load the source data to tha table field need to be transform
+                                      3.2.2- accdatamappingconvert_tbl, contain the diferent function to convert the source data.
+                               targetfield, is the field of the table that are going to receive the data.
+*/
+
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- Create the Trigger Before Update - accfilerowoperationstep_tbl
+-- en caso que desde Java no pasen la informacion de estos campos,
+-- establece el valor del date_timestamp, table_history creando el historico de cada registro
+USE accountingdb;
+DROP TRIGGER IF EXISTS `accountingdb`.`accfilerowoperationstepBeforeUpdate_Trg`;
+DELIMITER $$
+USE `accountingdb`$$
+    -- DEFINER=`root`@`localhost` -- When create Trigger in localhost, must add Definer between CREATE and TRIGGER key word.
+CREATE TRIGGER `accfilerowoperationstepBeforeUpdate_Trg` BEFORE UPDATE ON `accfilerowoperationstep_tbl` FOR EACH ROW BEGIN
+    DECLARE v_tablehistory text;
+    DECLARE v_tablehistoryold text;
+    IF new.table_history = 'SetNull' THEN
+        SET new.table_history = null;
+    ELSEIF new.table_history = 'SetOff' THEN
+        SET new.table_history = old.table_history;
+    ELSE
+        -- When the (New) value is equal the (Old), you set an empty update, because the value is steal in the record.
+        -- When the (New) value is diferent with the (Old), you set the old value in the update. The new value is in the record.
+        SET v_tablehistoryold := old.table_history;
+        SET v_tablehistory = '';
+        -- filerowoperationstep_idn, this value never changes.
+        IF NEW.appliedtocolumn <> OLD.appliedtocolumn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.appliedtocolumn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.fileoperation_steporder <> OLD.fileoperation_steporder THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.fileoperation_steporder); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.fileoperation_idn <> OLD.fileoperation_idn THEN SET v_tablehistory := OLD.fileoperation_idn; ELSE SET v_tablehistory := '†'; END IF;
+        IF NEW.fileoperation_value <> OLD.fileoperation_value THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.fileoperation_value); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.fileoperationaction_idn <> OLD.fileoperationaction_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.fileoperationaction_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF NEW.filerowoperation_idn <> OLD.filerowoperation_idn THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.filerowoperation_idn); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
+        IF v_tablehistoryold IS NULL THEN
+            SET NEW.table_history := v_tablehistory;
+            -- This line ensures add the first history value.
+        ELSE
+            SET NEW.table_history := concat(v_tablehistory,'‡',v_tablehistory);
+            -- This line concat the new and old history value.
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+-- Lista los datos de la tabla
+SELECT * FROM `accountingdb`.`accfilerowoperationstep_tbl`;
