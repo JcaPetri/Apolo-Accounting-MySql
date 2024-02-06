@@ -14,8 +14,8 @@ USE accountingdb;
 DROP TABLE IF EXISTS `accountingdb`.`accdatamapping_tbl`;
 
 CREATE TABLE `accountingdb`.`accdatamapping_tbl` (
-    `accdatamapping_idnum` int NOT NULL AUTO_INCREMENT COMMENT 'The accdatamapping_idnum is the autoincrement number', 
-    `accdatamapping_id` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The accdatamapping_id is the uniqueidentifier auto generated V4', 
+    `datamapping_idnum` int NOT NULL AUTO_INCREMENT COMMENT 'The datamapping_idnum is the autoincrement number', 
+    `datamapping_id` char(38) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The datamapping_id is the uniqueidentifier auto generated V4', 
     `datamapping` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'The datamapping the union of the MapperName plus the source field.',
     `fieldorder` smallint NOT NULL COMMENT 'The fieldorder is the numeric order.',
     `sourcefield` smallint NOT NULL COMMENT 'The sourcefield the number of the column array to be mapped. It started with one.',
@@ -25,11 +25,11 @@ CREATE TABLE `accountingdb`.`accdatamapping_tbl` (
     `dataexporttotable_idn` int NOT NULL COMMENT 'The dataexporttotable_idn is the user_idnum of the user who created the record. Linked to the userdb database through userauthorization_tbl.',
     `state_idn` smallint NOT NULL COMMENT 'The stated_idn define if the record is enable or not, or the custom state difined. Linked to the system database through sysbaseelement_mir.',
     `table_history` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT 'The table_history contain then change history of each column. The value is set only if it has changed from the previous value.',
-    PRIMARY KEY `accdatamappingidnum_admpkey` (`accdatamapping_idnum`) COMMENT 'The sequence is an autoincremental value.',
-    UNIQUE KEY `accdatamappingidnum_admpuni` (`accdatamapping_idnum`) COMMENT 'The dataelements_idnum must be unique.',
-    KEY `accdatamappingidnum_admpidx` (`accdatamapping_idnum`) /*!80000 INVISIBLE */ COMMENT 'The accdatamapping_idnum must always be indexed.',
-    UNIQUE KEY `accdatamappingid_admpuni` (`accdatamapping_id`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
-    KEY `accdatamappingid_admpidx` (`accdatamapping_id`) /*!80000 INVISIBLE */ COMMENT 'The accdatamapping_id alway must be indexed.',
+    PRIMARY KEY `datamappingidnum_admpkey` (`datamapping_idnum`) COMMENT 'The sequence is an autoincremental value.',
+    UNIQUE KEY `datamappingidnum_admpuni` (`datamapping_idnum`) COMMENT 'The dataelements_idnum must be unique.',
+    KEY `datamappingidnum_admpidx` (`datamapping_idnum`) /*!80000 INVISIBLE */ COMMENT 'The datamapping_idnum must always be indexed.',
+    UNIQUE KEY `datamappingid_admpuni` (`datamapping_id`) /*!80000 INVISIBLE */ COMMENT 'Is the uniqueidentifier.',
+    KEY `datamappingid_admpidx` (`datamapping_id`) /*!80000 INVISIBLE */ COMMENT 'The datamapping_id alway must be indexed.',
     UNIQUE KEY `dataexptblsourcefield_admpuni` (`sourcefield` ASC, `dataexporttotable_idn` ASC) COMMENT 'For each dataMapper you can have one source field.',
     KEY `statesourfielddataexptble_admpidx` (`state_idn`ASC, `sourcefield` ASC, `dataexporttotable_idn`ASC) COMMENT 'To optimize the search of Microservices Tables.'
 ) ENGINE=InnoDB 
@@ -40,8 +40,8 @@ Concept: the output of the process file, es an array with the data that we need 
              to mapping this array, you need to setup each column in the array with each field table.
              you can apply a specific function to convert the source value to the target value type.
 The key for each record:
-    accdatamapping_idnum --> is the autoincrement number auto generated.
-    accdatamapping_id --> is the uniqueidentifier auto generated.
+    datamapping_idnum --> is the autoincrement number auto generated.
+    datamapping_id --> is the uniqueidentifier auto generated.
         Clarification: idn = idnum (all the field ended with _idn, the origen of the value is the column idnum of the table sysbaseelement_tbl or accdatamapping_tbl).
 The unique Key is the union of:
     For mapper you can assign one time the sourcefield number.
@@ -59,8 +59,8 @@ USE `accountingdb`$$
 CREATE TRIGGER `accdatamappingBeforeInsert_Trg` BEFORE INSERT ON `accdatamapping_tbl` FOR EACH ROW BEGIN
     -- In the case, which the request do not give this value, MySql created it.
     -- Set the ID uniqueidentifier, targettable_idn, date_created and date_timestamp
-    IF new.accdatamapping_id IS NULL OR new.accdatamapping_id = '' THEN
-        SET new.accdatamapping_id = uuid(); -- Set the UniqueIdentifier Value
+    IF new.datamapping_id IS NULL OR new.datamapping_id = '' THEN
+        SET new.datamapping_id = uuid(); -- Set the UniqueIdentifier Value
     END IF;
 END$$
 DELIMITER ;
@@ -86,8 +86,8 @@ CREATE TRIGGER `accdatamappingBeforeUpdate_Trg` BEFORE UPDATE ON `accdatamapping
         -- When the (New) value is diferent with the (Old), you set the old value in the update. The new value is in the record.
         SET v_tablehistoryold := old.table_history;
         SET v_tablehistory = '';
-        -- accdatamapping_idnum, this value never changes.
-        -- accdatamapping_id, this value never changes.
+        -- datamapping_idnum, this value never changes.
+        -- datamapping_id, this value never changes.
         IF NEW.datamapping <> OLD.datamapping THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.datamapping); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
         IF NEW.fieldorder <> OLD.fieldorder THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.fieldorder); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
         IF NEW.sourcefield <> OLD.sourcefield THEN SET v_tablehistory := CONCAT(v_tablehistory,'†',OLD.sourcefield); ELSE SET v_tablehistory := CONCAT(v_tablehistory,'†'); END IF;
