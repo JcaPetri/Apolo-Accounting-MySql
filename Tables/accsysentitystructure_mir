@@ -16,7 +16,6 @@ CREATE TABLE `accountingdb`.`accsysentitystructure_mir` (
     `field_idn` integer NOT NULL COMMENT 'The field_idn is the idnum of the field/column of the entity. Link with the sysbaseelement_mir.',
     `entity_idn` integer NOT NULL COMMENT 'The entity_idn is the idnum of the entity. Link with the sysbaseelement_mir.',
     `microservice_idn` integer NOT NULL COMMENT 'The microservice_idn is the idnum of the Microservice that the Entity and Field belong. When is equal System, all microservices hava access to them.',
-    `datatype_idn` integer NOT NULL COMMENT 'The datatype_idn is the idnum of the type of data that you can enter in the field. Link with the sysbaseelement_mir.',
     `fieldnotnull` boolean NOT NULL COMMENT 'The fieldnotnull, if the value is 1 the field can`t be null, otherwise the null value is allowed.',
     `admitdefaultvalue` boolean NOT NULL COMMENT 'The admitdefaultvalue, if the value is 1 the field admit the default value, otherwise not. This is to facilitate data insertion.',
     `fieldorder` integer NOT NULL COMMENT 'The fieldorder is an ascendent number to order the fields/columns. If the user don`t define, the system insert an autonumeric increment number.',
