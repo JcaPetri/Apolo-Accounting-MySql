@@ -9,38 +9,39 @@ CREATE
     DEFINER = `root`@`localhost` 
     SQL SECURITY DEFINER
 VIEW `accountingdb`.`accsysentitystructures_vie` AS
-SELECT aes.entitystructure_idnum,
-    aes.entitystructure_id,
-    aes.microservice_idn,
-    bem03.fieldvalue AS microservice_name,
-    aes.entity_idn,
-    bem02.fieldvalue AS entity_name,
-    aes.field_idn,
-    bem01.fieldvalue AS field_name,
-    aes.datatype_idn,
-    bem04.fieldvalue AS datatype_name,
-    aes.fieldnotnull,
-    aes.admitdefaultvalue,
-    aes.fieldorder,
-    aes.targettable_idn,
-    bem05.fieldvalue AS targettable_name,
-    aes.state_idn,
-    bem06.fieldvalue AS state_name,
-    aes.createdby_idn,
-    aes.lastmodifiedby_idn,
-    aes.ownedby_idn,
-    aes.date_created,
-    aes.date_timestamp,
-    aes.tzname_idn,
-    bem07.fieldvalue AS tzname_name,
-    aes.tzoffset,
-    aes.table_history
-FROM accountingdb.accsysentitystructure_mir AS aes
-	LEFT JOIN accountingdb.accsysbaseelement_mir bem01 ON aes.field_idn = bem01.baseelement_idnum
-	LEFT JOIN accountingdb.accsysbaseelement_mir bem02 ON aes.entity_idn = bem02.baseelement_idnum
-	LEFT JOIN accountingdb.accsysbaseelement_mir bem03 ON aes.microservice_idn = bem03.baseelement_idnum
-	LEFT JOIN accountingdb.accsysbaseelement_mir bem04 ON aes.datatype_idn = bem04.baseelement_idnum
-	LEFT JOIN accountingdb.accsysbaseelement_mir bem05 ON aes.targettable_idn = bem05.baseelement_idnum
-    LEFT JOIN accountingdb.accsysbaseelement_mir bem06 ON aes.state_idn = bem06.baseelement_idnum
-	LEFT JOIN accountingdb.accsysbaseelement_mir bem07 ON aes.tzname_idn = bem07.baseelement_idnum
+SELECT ses.entitystructure_idnum,
+    ses.entitystructure_id,
+    ses.field_idn,
+	bem01.fieldvalue as field,
+    ses.entity_idn,
+	bem02.fieldvalue as fieldvalue,
+    ses.microservice_idn,
+	bem03.fieldvalue as microservice,
+    ses.is_nullable,
+    ses.admitdefaultvalue,
+    ses.fieldorder,
+    ses.targettable_idn,
+	bem04.fieldvalue as targettable,
+    ses.targetfield_idn,
+	bem05.fieldvalue as targetfield,
+    ses.fieldcomment_idn,
+    ses.state_idn,
+	bem06.fieldvalue as state,
+    ses.createdby_idn,
+    ses.lastmodifiedby_idn,
+    ses.ownedby_idn,
+    ses.date_created,
+    ses.date_timestamp,
+    ses.tzname_idn,
+	bem07.fieldvalue as tzname,
+    ses.tzoffset,
+    ses.table_history
+FROM accountingdb.accsysentitystructure_mir as ses
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem01 ON ses.field_idn = bem01.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem02 ON ses.entity_idn = bem02.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem03 ON ses.microservice_idn = bem03.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem04 ON ses.targettable_idn = bem04.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem05 ON ses.targetfield_idn = bem05.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem06 ON ses.state_idn = bem06.baseelement_idnum
+        LEFT JOIN accountingdb.accsysbaseelement_mir bem07 ON ses.tzname_idn = bem07.baseelement_idnum
 ;
